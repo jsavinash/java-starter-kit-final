@@ -11,6 +11,7 @@ java-language = "25"
 junit-jupiter = "5.11.4"
 assertj = "3.27.3"
 mockito = "5.16.0"
+junit-platform-launcher = "1.11.4"
 
 # Logging
 logback = "1.5.16"
@@ -51,11 +52,18 @@ gradle-test-kit = "9.6.1"
 # IDE Plugin (IntelliJ)
 intellij-plugin = "2.2.1"
 
+# Use Latest Versions
+ben-manes-versions = "0.53.0"
+
+# Code Formatting
+spotless = "8.8.0"
+
 [libraries]
 # Testing
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit-jupiter" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit-jupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform-launcher" }
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
@@ -87,6 +95,9 @@ docker-java-transport-okhttp = { module = "com.github.docker-java:docker-java-tr
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 
 [plugins]
+# Use Latest Versions
+ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "ben-manes-versions" }
+
 # Spring
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
@@ -105,9 +116,11 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 # IDE Plugin (IntelliJ Platform)
 intellij-plugin = { id = "org.jetbrains.intellij.platform", version.ref = "intellij-plugin" }
 
-
 # Docker
 docker-plugin = { id = "com.bmuschko.docker-remote-api", version = "9.3.4" }
+
+# Code Formatting
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 
 # Shadow (fat JAR)
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
