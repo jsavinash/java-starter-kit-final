@@ -18,3 +18,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "java-starter-kit"
+
+// Platforms BOM composite build
+includeBuild("platforms")
