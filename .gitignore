@@ -1,0 +1,113 @@
+# Gradle
+.gradle/
+build/
+**/build/
+.gradle-work/
+
+# Kotlin / Kotlin Native
+.kotlin/
+.konan/
+
+# Android
+local.properties
+.navigation/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.ap_
+*.aar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+**/*.iml
+out/
+.idea_modules/
+.vscode/
+
+# Eclipse
+.classpath
+.project
+.settings/
+.factorypath
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# OS/System files
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
+*~
+*.tmp
+*.temp
+
+# Bin directories
+**/bin/
+
+# Platforms BOM build artifacts
+platforms/*/build/
+
+# Logs
+*.log
+logs/
+
+# Secrets & Local Configurations
+.env
+.env*.local
+.env.*
+/security/
+*.jks
+*.keystore
+*credentials*.properties
+*.p12
+*.pem
+
+# Spring Boot
+.spring-boot-devtools.properties
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Test coverage
+**/jacoco.exec
+**/jacoco-test-execution-data
+**/.clover/
+coverage/
+html-report/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars.override
+.terraform.lock.hcl
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Kubernetes
+.secrets/
+
+# Miscellaneous
+*.class
+*.jar
+*.war
+*.ear
+*.pid
+*.seed
+*.pid.lock
+.vscode/
+.attach_pid*
