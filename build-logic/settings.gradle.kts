@@ -1,13 +1,16 @@
 // ============================================================================
-// Java Starter Kit - Platforms Composite Build Settings
+// Java Starter Kit - Build Logic Composite Build Settings
+// ============================================================================
+// This composite build hosts convention plugins shared across the monorepo.
 // ============================================================================
 
-rootProject.name = "java-starter-kit-platforms"
+rootProject.name = "java-starter-kit-build-logic"
 
 dependencyResolutionManagement {
     repositories {
-        mavenCentral()
+        gradlePluginPortal()
         google()
+        mavenCentral()
     }
     versionCatalogs {
         create("libs") {
@@ -16,4 +19,4 @@ dependencyResolutionManagement {
     }
 }
 
-include("spring-boot-platform")
+include(":convention-plugins")

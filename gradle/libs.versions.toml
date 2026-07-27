@@ -7,24 +7,27 @@
 # Java
 java-language = "25"
 
+# Kotlin (for Gradle DSL and build-logic)
+kotlin = "2.4.10"
+
 # Testing
 junit-jupiter = "5.11.4"
 assertj = "3.27.3"
-mockito = "5.16.0"
+mockito = "5.16.1"
 junit-platform-launcher = "1.11.4"
 
 # Logging
-logback = "1.5.16"
+logback = "1.5.18"
 slf4j = "2.0.17"
 
 # JSON
-jackson = "2.18.2"
+jackson = "2.18.3"
 
 # CLI
-picocli = "4.7.6"
+picocli = "4.7.7"
 
 # Web / Server
-spring-boot = "3.4.3"
+spring-boot = "3.4.4"
 spring-dependency-management = "1.1.7"
 micronaut = "4.7.6"
 
@@ -39,24 +42,21 @@ aws-lambda-events = "3.15.0"
 # Docker
 docker-java = "3.4.1"
 
-# Android
-android-gradle-plugin = "8.7.3"
-
-# Kotlin (for Gradle DSL)
-kotlin = "2.1.10"
-
 # Gradle Plugin
 gradle-plugin-development = "1.0.0"
 gradle-test-kit = "9.6.1"
-
-# IDE Plugin (IntelliJ)
-intellij-plugin = "2.2.1"
 
 # Use Latest Versions
 ben-manes-versions = "0.53.0"
 
 # Code Formatting
 spotless = "8.8.0"
+
+# Shadow (fat JAR)
+shadow = "8.1.1"
+
+# Docker Build
+docker-remote-api = "9.3.4"
 
 [libraries]
 # Testing
@@ -95,8 +95,8 @@ docker-java-transport-okhttp = { module = "com.github.docker-java:docker-java-tr
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 
 [plugins]
-# Use Latest Versions
-ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "ben-manes-versions" }
+# Kotlin
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 
 # Spring
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
@@ -106,21 +106,14 @@ spring-dependency-management = { id = "io.spring.dependency-management", version
 micronaut-application = { id = "io.micronaut.application", version.ref = "micronaut" }
 micronaut-library = { id = "io.micronaut.library", version.ref = "micronaut" }
 
-# Android
-android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
-android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
-
-# Kotlin
-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-
-# IDE Plugin (IntelliJ Platform)
-intellij-plugin = { id = "org.jetbrains.intellij.platform", version.ref = "intellij-plugin" }
-
-# Docker
-docker-plugin = { id = "com.bmuschko.docker-remote-api", version = "9.3.4" }
+# Use Latest Versions
+ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "ben-manes-versions" }
 
 # Code Formatting
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 
 # Shadow (fat JAR)
-shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
+
+# Docker
+docker-plugin = { id = "com.bmuschko.docker-remote-api", version.ref = "docker-remote-api" }
