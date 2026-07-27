@@ -17,6 +17,12 @@ import org.gradle.jvm.tasks.Jar
  * - Devtools support
  * - Actuator support
  * - Testing and code quality conventions
+ * - Jib containerization (Docker/OCI images)
+ * - Git Commit ID plugin for build metadata
+ * - Lombok annotation processing
+ * - MapStruct code generation
+ * - SpringDoc OpenAPI documentation
+ * - Flyway database migration support
  */
 class SpringBootApplicationConventionPlugin : Plugin<Project> {
 
@@ -30,8 +36,14 @@ class SpringBootApplicationConventionPlugin : Plugin<Project> {
         project.plugins.apply("org.springframework.boot")
         project.plugins.apply("io.spring.dependency-management")
 
+        // Apply Core Build & Packaging Plugins
+        project.plugins.apply("com.google.cloud.tools.jib")
+        project.plugins.apply("com.gorylenko.gradle-git-properties")
+
         project.configureSpringBootApplication()
         project.configureDependencies()
+        project.configureJib()
+        project.configureGitProperties()
     }
 
     private fun Project.configureSpringBootApplication() {
@@ -63,5 +75,42 @@ class SpringBootApplicationConventionPlugin : Plugin<Project> {
 
         // Devtools for development only
         deps.add("developmentOnly", libs.findLibrary("spring-boot-devtools").get())
+
+        // ──────────────────────────────────────────────────────────────────────
+        // Code Generation & Architecture Plugins
+        // ──────────────────────────────────────────────────────────────────────
+
+        // Lombok - Boilerplate code reduction
+        deps.add("compileOnly", libs.findLibrary("lombok").get())
+        deps.add("annotationProcessor", libs.findLibrary("lombok").get())
+        deps.add("testCompileOnly", libs.findLibrary("lombok").get())
+        deps.add("testAnnotationProcessor", libs.findLibrary("lombok").get())
+
+        // MapStruct - Object mapping code generation
+        deps.add("implementation", libs.findLibrary("mapstruct").get())
+        deps.add("annotationProcessor", libs.findLibrary("mapstruct-processor").get())
+
+        // SpringDoc OpenAPI - Code-first API documentation
+        deps.add("implementation", libs.findLibrary("springdoc-openapi").get())
+
+        // Flyway - Database migration
+        deps.add("implementation", libs.findLibrary("flyway-core").get())
+    }
+
+    private fun Project.configureJib() {
+        // Jib is auto-configured via build.gradle.kts or jib configuration in application
+        // Default configuration is sufficient for most use cases
+        // Customize via project.jib { ... } in the application's build.gradle.kts
+    }
+
+    private fun Project.configureGitProperties() {
+        // Git properties plugin is auto-configured by default
+        // It generates META-INF/build-info.properties and git.properties
+        // These are consumed by Spring Boot Actuator's /info endpoint
+
+        // Ensure git properties are generated during compilation
+        tasks.matching { it.name == "compileJava" }.configureEach {
+            this.dependsOn("generateGitProperties")
+        }
     }
 }

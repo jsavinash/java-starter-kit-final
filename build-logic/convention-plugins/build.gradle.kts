@@ -29,6 +29,11 @@ dependencies {
     implementation(plugin(libs, "spotless"))
     implementation(plugin(libs, "spring-boot"))
     implementation(plugin(libs, "spring-dependency-management"))
+    implementation(plugin(libs, "jib"))
+    implementation(plugin(libs, "git-properties"))
+    implementation(plugin(libs, "owasp-dependency-check"))
+    implementation(plugin(libs, "spotbugs"))
+    implementation(plugin(libs, "sonarqube"))
 }
 
 fun plugin(libs: VersionCatalog, alias: String): String {
@@ -39,6 +44,7 @@ fun plugin(libs: VersionCatalog, alias: String): String {
             "spring-boot" -> "spring-boot"
             "spring-dependency-management" -> "spring-dependency-management"
             "spotless" -> "spotless"
+            "spotbugs" -> "spotbugs-gradle-plugin"
             else -> alias
         }
     ).get().displayName

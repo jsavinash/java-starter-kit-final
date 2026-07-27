@@ -28,6 +28,55 @@ spring-dependency-management = "1.1.7"
 # Code Formatting
 spotless = "8.8.0"
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Core Build & Packaging Plugins
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Google Jib - Build optimized Docker/OCI images without Docker daemon
+jib = "3.4.5"
+
+# Git Commit ID Plugin - Exposes git metadata in build
+git-properties = "4.0.1"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Code Generation & Architecture Plugins
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Lombok - Boilerplate code reduction
+lombok = "1.18.38"
+
+# MapStruct - Object mapping code generation
+mapstruct = "1.6.3"
+
+# OpenAPI Generator - API-first code generation from OpenAPI specs
+openapi-generator = "7.12.0"
+
+# SpringDoc OpenAPI - Code-first OpenAPI spec generation
+springdoc = "2.8.6"
+
+# Flyway - Database migration tool
+flyway = "11.6.0"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Code Quality, Security & Testing Plugins
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Checkstyle - Code style enforcement (tool version)
+checkstyle = "10.23.0"
+
+# SpotBugs - Bytecode static analysis
+spotbugs = "4.10.3"
+spotbugs-gradle-plugin = "6.5.9"
+
+# OWASP Dependency Check - Security vulnerability scanning
+owasp-dependency-check = "12.2.2"
+
+# JaCoCo - Code coverage
+jacoco = "0.8.12"
+
+# SonarQube - Code quality dashboard integration
+sonarqube = "7.3.1.8318"
+
 [libraries]
 # Testing
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api" }
@@ -58,6 +107,21 @@ spring-boot-autoconfigure = { module = "org.springframework.boot:spring-boot-aut
 # Kotlin stdlib (for Gradle DSL compatibility)
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 
+# Code Generation
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
+mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
+mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
+
+# SpringDoc OpenAPI
+springdoc-openapi = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
+
+# Database Migration
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+
+# Code Quality
+checkstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
+spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs" }
+
 [plugins]
 # Spring
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
@@ -65,3 +129,32 @@ spring-dependency-management = { id = "io.spring.dependency-management", version
 
 # Code Formatting
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Core Build & Packaging Plugins
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Google Jib - Containerize applications without Docker daemon
+jib = { id = "com.google.cloud.tools.jib", version.ref = "jib" }
+
+# Git Commit ID - Expose git properties in build artifacts
+git-properties = { id = "com.gorylenko.gradle-git-properties", version.ref = "git-properties" }
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Code Quality, Security & Testing Plugins
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Checkstyle - Code style enforcement
+checkstyle = { id = "checkstyle" }
+
+# SpotBugs - Find bugs via static analysis
+spotbugs = { id = "com.github.spotbugs", version.ref = "spotbugs-gradle-plugin" }
+
+# OWASP Dependency Check - Security vulnerability scanning
+owasp-dependency-check = { id = "org.owasp.dependencycheck", version.ref = "owasp-dependency-check" }
+
+# JaCoCo - Code coverage analysis
+jacoco = { id = "jacoco" }
+
+# SonarQube - Centralized code quality dashboard
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }

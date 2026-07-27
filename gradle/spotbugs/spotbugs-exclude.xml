@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Exclude generated sources -->
+    <Match>
+        <Or>
+            <Source name="~.*generated.*" />
+            <Source name="~.*build/generated.*" />
+        </Or>
+    </Match>
+
+    <!-- Exclude Lombok-generated code from SpotBugs analysis -->
+    <Match>
+        <Or>
+            <Source name="~.*\$.*" />
+            <Class name="~.*\$\$.*" />
+        </Or>
+    </Match>
+
+    <!-- Exclude MapStruct-generated mappers -->
+    <Match>
+        <Or>
+            <Class name="~.*MapperImpl.*" />
+            <Class name="~.*Impl" />
+            <Source name="~.*MapperImpl\.java" />
+        </Or>
+    </Match>
+
+    <!-- Exclude plain Spring Boot Application classes from some checks -->
+    <Match>
+        <Class name="~.*Application" />
+        <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION" />
+    </Match>
+
+    <!-- Exclude DTO classes from serialization checks -->
+    <Match>
+        <Class name="~.*DTO" />
+        <Bug pattern="SE_NO_SERIALVERSIONID" />
+    </Match>
+
+    <Match>
+        <Class name="~.*Dto" />
+        <Bug pattern="SE_NO_SERIALVERSIONID" />
+    </Match>
+
+    <!-- Exclude test classes from certain checks -->
+    <Match>
+        <Source name="~.*Test\.java" />
+        <Or>
+            <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION" />
+            <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" />
+            <Bug pattern="RV_RETURN_VALUE_IGNORED" />
+        </Or>
+    </Match>
+</FindBugsFilter>
