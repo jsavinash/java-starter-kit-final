@@ -50,7 +50,7 @@ publishing {
         create<MavenPublication>("mavenJavaPlatform") {
             from(components["javaPlatform"])
             groupId = rootProject.group.toString()
-            artifactId = "spring-boot-platform"
+            artifactId = "spring-boot"
             version = rootProject.version.toString()
         }
     }

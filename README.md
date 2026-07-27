@@ -1,6 +1,6 @@
 # Java Starter Kit
 
-A modern Gradle monorepo for Java 25 applications with Spring Boot 3.4, featuring convention plugins, a platform BOM composite build, and integrated code quality tooling.
+A modern Gradle monorepo for Java 25 applications with Spring Boot 4.0, featuring convention plugins, a platform BOM composite build, and integrated code quality tooling.
 
 ## Tech Stack
 
@@ -9,8 +9,8 @@ A modern Gradle monorepo for Java 25 applications with Spring Boot 3.4, featurin
 | Java | **25** (Amazon Corretto 25.0.4) |
 | Gradle | **9.6.1** |
 | Kotlin (DSL) | **2.4.10** |
-| Spring Boot | **3.4.4** |
-| JUnit Jupiter | **5.11.4** |
+| Spring Boot | **4.0.7** |
+| JUnit Jupiter | **5.12.x** (managed by Spring Boot BOM) |
 | AssertJ | **3.27.3** |
 | Mockito | **5.16.1** |
 | Spotless | **8.8.0** |
@@ -31,18 +31,19 @@ java-starter-kit/
 │           └── CodeQualityConventionPlugin.kt
 ├── platforms/                            # Composite build: BOM platform
 │   ├── settings.gradle.kts
-│   └── spring-boot-platform/
+│   └── spring-boot/
 │       └── build.gradle.kts
-├── webapp/                               # Example Spring Boot application
-│   ├── build.gradle.kts
-│   └── src/
-│       ├── main/java/com/javastarterkit/webapp/
-│       │   ├── WebApplication.java
-│       │   ├── service/GreetingService.java
-│       │   └── web/GreetingController.java
-│       ├── main/resources/application.yml
-│       └── test/java/com/javastarterkit/webapp/
-│           └── WebApplicationTest.java
+├── apps/                                 # Application modules
+│   └── webapp/                           # Example Spring Boot application
+│       ├── build.gradle.kts
+│       └── src/
+│           ├── main/java/com/javastarterkit/webapp/
+│           │   ├── WebApplication.java
+│           │   ├── service/GreetingService.java
+│           │   └── web/GreetingController.java
+│           ├── main/resources/application.yml
+│           └── test/java/com/javastarterkit/webapp/
+│               └── WebApplicationTest.java
 ├── gradle/
 │   ├── libs.versions.toml                # Centralized version catalog
 │   └── wrapper/
@@ -83,7 +84,7 @@ sdk env install
 ./gradlew clean build
 
 # Run the web application
-./gradlew :webapp:bootRun
+./gradlew :apps:webapp:bootRun
 ```
 
 The web application starts on `http://localhost:8080` with the following endpoints:
@@ -102,8 +103,8 @@ The web application starts on `http://localhost:8080` with the following endpoin
 | `./gradlew clean build` | Full clean build with tests and checks |
 | `./gradlew spotlessApply` | Auto-format all code (Java, Kotlin, Gradle) |
 | `./gradlew spotlessCheck` | Check code formatting only |
-| `./gradlew :webapp:bootRun` | Run the example web application |
-| `./gradlew :webapp:test` | Run tests for the web application |
+| `./gradlew :apps:webapp:bootRun` | Run the example web application |
+| `./gradlew :apps:webapp:test` | Run tests for the web application |
 | `./gradlew check` | Run all checks (tests + formatting) |
 | `./gradlew dependencies` | Display dependency tree |
 
@@ -114,7 +115,7 @@ The web application starts on `http://localhost:8080` with the following endpoin
 The project uses Gradle composite builds for modularity:
 
 1. **`build-logic`** — Convention plugins (`java-base`, `spring-boot-application`, `spring-boot-library`, `testing`, `code-quality`) providing reusable build configurations.
-2. **`platforms/spring-boot-platform`** — A Java Platform (BOM) that pins Spring Boot and ecosystem dependency versions centrally.
+2. **`platforms/spring-boot`** — A Java Platform (BOM) that pins Spring Boot and ecosystem dependency versions centrally.
 
 ### Convention Plugin Hierarchy
 
@@ -147,7 +148,9 @@ com.javastarterkit.buildlogic.spring-boot-library
 
 ### Version Catalog
 
-All dependency and plugin versions are centralized in `gradle/libs.versions.toml` and accessible via type-safe accessors (`libs.*`). This ensures consistent versions across all modules and composite builds.
+All dependency and plugin versions are centralized in `gradle/libs.versions.toml` and accessed via `libs.findLibrary("...")` in both build scripts and convention plugins. Only dependencies actually used by the project are declared — unused libraries (Micronaut, Docker, AWS Lambda, Android, etc.) have been removed from the catalog.
+
+The Spring Boot starters (`spring-boot-starter`, `spring-boot-starter-web`, etc.) and JUnit platform dependencies are declared in the catalog without explicit versions since they are managed by the `spring-boot` BOM.
 
 ## Code Quality
 

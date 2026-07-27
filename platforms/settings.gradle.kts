@@ -2,7 +2,7 @@
 // Java Starter Kit - Platforms Composite Build Settings
 // ============================================================================
 
-rootProject.name = "java-starter-kit-platforms"
+rootProject.name = "platforms"
 
 dependencyResolutionManagement {
     repositories {
@@ -16,4 +16,4 @@ dependencyResolutionManagement {
     }
 }
 
-include("spring-boot-platform")
+include("spring-boot")

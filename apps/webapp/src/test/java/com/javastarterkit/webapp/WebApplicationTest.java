@@ -7,10 +7,9 @@ import com.javastarterkit.webapp.web.GreetingController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClient;
 
 /**
  * Integration test for the Spring Boot Web Application.
@@ -28,9 +27,6 @@ class WebApplicationTest {
     private int port;
 
     @Autowired
-    private TestRestTemplate restTemplate;
-
-    @Autowired
     private GreetingController greetingController;
 
     @Test
@@ -42,8 +38,11 @@ class WebApplicationTest {
     @Test
     void greetingEndpointReturnsOk() {
         // Act
-        ResponseEntity<String> response =
-                restTemplate.getForEntity("http://localhost:%d/api/greeting".formatted(port), String.class);
+        var response = RestClient.create()
+                .get()
+                .uri("http://localhost:%d/api/greeting".formatted(port))
+                .retrieve()
+                .toEntity(String.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -53,8 +52,11 @@ class WebApplicationTest {
     @Test
     void greetingEndpointWithCustomName() {
         // Act
-        ResponseEntity<String> response = restTemplate.getForEntity(
-                "http://localhost:%d/api/greeting?name=SpringBoot".formatted(port), String.class);
+        var response = RestClient.create()
+                .get()
+                .uri("http://localhost:%d/api/greeting?name=SpringBoot".formatted(port))
+                .retrieve()
+                .toEntity(String.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -64,8 +66,11 @@ class WebApplicationTest {
     @Test
     void healthEndpointReturnsUp() {
         // Act
-        ResponseEntity<String> response =
-                restTemplate.getForEntity("http://localhost:%d/api/health".formatted(port), String.class);
+        var response = RestClient.create()
+                .get()
+                .uri("http://localhost:%d/api/health".formatted(port))
+                .retrieve()
+                .toEntity(String.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -75,8 +80,11 @@ class WebApplicationTest {
     @Test
     void greetingContainsTimestamp() {
         // Act
-        ResponseEntity<String> response =
-                restTemplate.getForEntity("http://localhost:%d/api/greeting".formatted(port), String.class);
+        var response = RestClient.create()
+                .get()
+                .uri("http://localhost:%d/api/greeting".formatted(port))
+                .retrieve()
+                .toEntity(String.class);
 
         // Assert — the response should contain an ISO-like timestamp
         assertThat(response.getBody())

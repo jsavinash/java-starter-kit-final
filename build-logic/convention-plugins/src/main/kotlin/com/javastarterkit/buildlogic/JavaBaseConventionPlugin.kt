@@ -80,6 +80,12 @@ class JavaBaseConventionPlugin : Plugin<Project> {
             }
             minHeapSize = "512m"
             maxHeapSize = "2g"
+
+            // Java 25+ JVM compatibility settings
+            jvmArgs(
+                "-XX:+EnableDynamicAgentLoading",  // Allow Mockito inline mocking agent
+                "-Xshare:off"                       // Disable CDS to avoid bootstrap classpath warning
+            )
         }
     }
 }

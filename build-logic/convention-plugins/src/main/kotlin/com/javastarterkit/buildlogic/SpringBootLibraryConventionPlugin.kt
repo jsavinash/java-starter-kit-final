@@ -30,16 +30,19 @@ class SpringBootLibraryConventionPlugin : Plugin<Project> {
     }
 
     private fun Project.configureDependencies() {
+        val libs = extensions.getByType(VersionCatalogsExtension::class.java)
+            .named("libs")
+
         val deps = dependencies
 
         // Import the Spring Boot platform BOM from the composite build as API (transitive)
-        deps.add("api", deps.platform("com.javastarterkit:spring-boot-platform:1.0.0-SNAPSHOT"))
+        deps.add("api", deps.platform("com.javastarterkit:spring-boot:1.0.0-SNAPSHOT"))
 
-        // Core Spring Boot dependencies
-        deps.add("implementation", "org.springframework.boot:spring-boot-starter")
-        deps.add("implementation", "org.springframework.boot:spring-boot-autoconfigure")
+        // Core Spring Boot dependencies — versions managed by the platform BOM
+        deps.add("implementation", libs.findLibrary("spring-boot-starter").get())
+        deps.add("implementation", libs.findLibrary("spring-boot-autoconfigure").get())
 
         // Configuration processor
-        deps.add("annotationProcessor", "org.springframework.boot:spring-boot-configuration-processor")
+        deps.add("annotationProcessor", libs.findLibrary("spring-boot-configuration-processor").get())
     }
 }

@@ -11,7 +11,7 @@ pluginManagement {
     plugins {
         // Explicitly declare plugins used by convention plugins
         // so they are resolvable when applied from composite builds
-        id("org.springframework.boot") version "3.4.4"
+        id("org.springframework.boot") version "4.0.7"
         id("io.spring.dependency-management") version "1.1.7"
         id("com.diffplug.spotless") version "8.8.0"
     }
@@ -35,4 +35,4 @@ includeBuild("build-logic")
 // ---------------------------------------------------------------------------
 // Spring Boot Application — Example Subproject
 // ---------------------------------------------------------------------------
-include("webapp")
+include("apps:webapp")

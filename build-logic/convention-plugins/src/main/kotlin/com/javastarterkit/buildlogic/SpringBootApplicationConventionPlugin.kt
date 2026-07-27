@@ -52,16 +52,16 @@ class SpringBootApplicationConventionPlugin : Plugin<Project> {
 
         val deps = dependencies
 
-        deps.add("implementation", deps.platform("com.javastarterkit:spring-boot-platform:1.0.0-SNAPSHOT"))
+        deps.add("implementation", deps.platform("com.javastarterkit:spring-boot:1.0.0-SNAPSHOT"))
 
-        // Spring Boot starters
-        deps.add("implementation", "org.springframework.boot:spring-boot-starter")
-        deps.add("implementation", "org.springframework.boot:spring-boot-starter-actuator")
+        // Spring Boot starters — versions managed by the platform BOM
+        deps.add("implementation", libs.findLibrary("spring-boot-starter").get())
+        deps.add("implementation", libs.findLibrary("spring-boot-starter-actuator").get())
 
         // Configuration processor
-        deps.add("annotationProcessor", "org.springframework.boot:spring-boot-configuration-processor")
+        deps.add("annotationProcessor", libs.findLibrary("spring-boot-configuration-processor").get())
 
         // Devtools for development only
-        deps.add("developmentOnly", "org.springframework.boot:spring-boot-devtools")
+        deps.add("developmentOnly", libs.findLibrary("spring-boot-devtools").get())
     }
 }

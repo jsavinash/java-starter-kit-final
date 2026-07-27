@@ -4,7 +4,7 @@
 // This composite build hosts convention plugins shared across the monorepo.
 // ============================================================================
 
-rootProject.name = "java-starter-kit-build-logic"
+rootProject.name = "build-logic"
 
 dependencyResolutionManagement {
     repositories {
