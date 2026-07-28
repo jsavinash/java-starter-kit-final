@@ -1,0 +1,2 @@
+# AutoConfigure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.javastarterkit.greeting.GreetingServiceAutoConfiguration

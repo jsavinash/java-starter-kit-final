@@ -41,7 +41,7 @@ class JavaBaseConventionPlugin : Plugin<Project> {
                 libs.findVersion("java-language").get().displayName
             ))
             // Match the installed Amazon Corretto JDK (as defined in .sdkmanrc)
-            vendor.set(JvmVendorSpec.matching("amazon"))
+            vendor.set(JvmVendorSpec.AMAZON)
         }
 
         // Source and target compatibility

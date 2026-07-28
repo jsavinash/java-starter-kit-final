@@ -1,0 +1,32 @@
+# ============================================================================
+# Spring Boot Actuator & DevTools Example Configuration
+# ============================================================================
+
+server:
+  port: 8140
+
+spring:
+  application:
+    name: actuator-devtools
+
+# Actuator endpoints configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,beans,env
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+
+# DevTools configuration
+spring:
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+    livereload:
+      enabled: true

@@ -1,0 +1,38 @@
+// ============================================================================
+// Spring Batch Extensions — Example Application
+// ============================================================================
+// Demonstrates Spring Batch Extensions concepts:
+// - Extended batch processing capabilities
+// - Additional job repository options
+// - Async job processing
+// - Batch administration
+// ============================================================================
+
+plugins {
+    id("com.javastarterkit.buildlogic.spring-boot-application")
+}
+
+val libs = the<VersionCatalogsExtension>().named("libs")
+
+group = "com.javastarterkit"
+version = "1.0.0-SNAPSHOT"
+
+description = "Spring Batch Extensions Example"
+
+dependencies {
+    // Spring Batch
+    implementation(libs.findLibrary("spring-boot-starter-batch").get())
+
+    // Spring Batch Extensions
+    implementation(libs.findLibrary("spring-batch-extensions").get())
+
+    // H2 Database
+    implementation(libs.findLibrary("h2").get())
+
+    // Test starter
+    testImplementation(libs.findLibrary("spring-boot-starter-test").get())
+}
+
+springBoot {
+    mainClass = "com.javastarterkit.batchextensions.BatchExtensionsApplication"
+}

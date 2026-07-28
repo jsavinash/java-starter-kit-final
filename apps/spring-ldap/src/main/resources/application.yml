@@ -1,0 +1,12 @@
+spring:
+  ldap:
+    urls: ldap://localhost:8389
+    base-dn: dc=example,dc=com
+    username: cn=admin,dc=example,dc=com
+    password: admin
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

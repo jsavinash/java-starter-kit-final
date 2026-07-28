@@ -1,0 +1,20 @@
+# ============================================================================
+# IoC Container Example Configuration
+# ============================================================================
+
+server:
+  port: 8081
+
+spring:
+  application:
+    name: ioc-example
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

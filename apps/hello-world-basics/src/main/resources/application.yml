@@ -1,0 +1,23 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: hello-world-basics
+
+# Greeting service configuration (from the library)
+app:
+  greeting:
+    prefix: "Hi"
+    suffix: "!!!"
+    include-time: true
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
