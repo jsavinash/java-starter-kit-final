@@ -52,6 +52,7 @@ include("apps:fundamentals:spring-boot-devtools")
 include("apps:fundamentals:spring-petclinic")
 include("apps:fundamentals:spring-aot")
 include("apps:fundamentals:spring-framework-loaded")
+include("apps:fundamentals:spring-core")
 
 // ---------------------------------------------------------------------------
 // ====== DATA CATEGORY ======
@@ -76,6 +77,9 @@ include("apps:data:spring-data-bom")
 include("apps:data:spring-data-dev-tools")
 include("apps:data:spring-data-samples")
 include("apps:data:spring-boot-data-geode")
+include("apps:data:spring-flyway")
+include("apps:data:spring-caching")
+include("apps:data:spring-transaction")
 
 // ---------------------------------------------------------------------------
 // ====== SECURITY CATEGORY ======
@@ -100,6 +104,9 @@ include("apps:web:spring-web-flow")
 include("apps:web:spring-graphql")
 include("apps:web:spring-grpc")
 include("apps:web:spring-hateoas")
+include("apps:web:spring-websocket")
+include("apps:web:spring-mvc")
+include("apps:web:spring-thymeleaf")
 
 // ---------------------------------------------------------------------------
 // ====== BATCH & INTEGRATION CATEGORY ======
@@ -125,6 +132,9 @@ include("apps:cloud:spring-cloud-sleuth")
 include("apps:cloud:spring-cloud-bus")
 include("apps:cloud:spring-cloud-task")
 include("apps:cloud:spring-cloud-zookeeper")
+include("apps:cloud:spring-cloud-circuitbreaker")
+include("apps:cloud:spring-cloud-loadbalancer")
+include("apps:cloud:spring-cloud-function")
 
 // ---------------------------------------------------------------------------
 // ====== MESSAGING CATEGORY ======
@@ -134,6 +144,8 @@ include("apps:messaging:spring-amqp")
 include("apps:messaging:spring-kafka")
 include("apps:messaging:spring-pulsar")
 include("apps:messaging:spring-cloud-stream")
+include("apps:messaging:spring-jms")
+include("apps:messaging:spring-mail")
 
 // ---------------------------------------------------------------------------
 // ====== EXTENSIONS CATEGORY ======
@@ -144,9 +156,12 @@ include("apps:extensions:spring-shell")
 include("apps:extensions:spring-plugin")
 include("apps:extensions:spring-modulith")
 include("apps:extensions:spring-guice")
+include("apps:extensions:spring-retry")
 
 // ---------------------------------------------------------------------------
 // ====== TESTING CATEGORY ======
 // Testing tools and documentation: REST Docs, etc.
 // ---------------------------------------------------------------------------
 include("apps:testing:spring-restdocs")
+include("apps:testing:spring-testcontainers")
+include("apps:testing:spring-mockmvc")
