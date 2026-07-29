@@ -20,11 +20,8 @@ version = "1.0.0-SNAPSHOT"
 description = "Spring Integration Flow Example"
 
 dependencies {
-    // Spring Integration Flow
-    implementation(libs.findLibrary("spring-integration-flow").get())
-
-    // Spring Integration Core
-    implementation(libs.findLibrary("spring-integration-core").get())
+    // Spring Integration
+    implementation(libs.findLibrary("spring-boot-starter-integration").get())
 
     // Test starter
     testImplementation(libs.findLibrary("spring-boot-starter-test").get())

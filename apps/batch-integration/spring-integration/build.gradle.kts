@@ -24,7 +24,7 @@ dependencies {
     implementation(libs.findLibrary("spring-boot-starter-web").get())
 
     // Spring Integration
-    implementation(libs.findLibrary("spring-integration-core").get())
+    implementation(libs.findLibrary("spring-boot-starter-integration").get())
 
     // Test starter
     testImplementation(libs.findLibrary("spring-boot-starter-test").get())

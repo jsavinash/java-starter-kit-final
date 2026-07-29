@@ -20,11 +20,8 @@ version = "1.0.0-SNAPSHOT"
 description = "Spring Batch Extensions Example"
 
 dependencies {
-    // Spring Batch
+    // Spring Batch core
     implementation(libs.findLibrary("spring-boot-starter-batch").get())
-
-    // Spring Batch Extensions
-    implementation(libs.findLibrary("spring-batch-extensions").get())
 
     // H2 Database
     implementation(libs.findLibrary("h2").get())
