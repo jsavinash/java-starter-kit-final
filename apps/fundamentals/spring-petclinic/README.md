@@ -1,10 +1,15 @@
 # Spring PetClinic — Example Application
 
-The classic Spring PetClinic reference application demonstrating Spring Boot best practices with Thymeleaf templating and JPA persistence.
+A classic Spring Boot reference application demonstrating layered architecture, JPA entity relationships, and Spring Data repositories.
 
 ## 🎯 Purpose
 
-A comprehensive reference application showcasing a complete web application with server-side rendering, database access, and layered architecture.
+A comprehensive reference application showcasing Spring Boot best practices with a focus on:
+- Layered architecture (Controller → Service → Repository)
+- JPA entity relationships and mappings
+- Spring Data JPA repositories
+- H2 in-memory database
+- Thymeleaf templating
 
 ## 🧩 Key Dependencies
 
@@ -19,12 +24,18 @@ A comprehensive reference application showcasing a complete web application with
 ./gradlew :apps:fundamentals:spring-petclinic:bootRun
 ```
 
+Then visit:
+- `http://localhost:8081/` — Application root
+- `http://localhost:8081/h2-console` — H2 database console
+
 ## 📚 Concepts Demonstrated
 
-- **Thymeleaf Templates** — Server-side HTML rendering with Thymeleaf
-- **JPA Repositories** — Data access with Spring Data JPA
+- **Layered Architecture** — Controller → Service → Repository → Entity
+- **JPA Entities** — `@Entity`, `@Table`, `@Id`, `@GeneratedValue`
 - **Entity Relationships** — `@OneToMany`, `@ManyToOne`, `@JoinColumn`
-- **Layered Architecture** — Controller → Service → Repository pattern
-- **H2 Console** — In-memory database browser at `/h2-console`
-- **CRUD Operations** — Full Create, Read, Update, Delete workflows
-- **Form Validation** — Client and server-side form validation
+- **Spring Data JPA** — `JpaRepository`, derived query methods
+- **Derived Queries** — `findByLastName`, `findAllByOrderByLastNameAsc`
+- **H2 Database** — In-memory database with `ddl-auto: update`
+- **H2 Console** — Web-based database browser at `/h2-console`
+- **Service Layer** — Business logic separation with constructor injection
+- **Model Validation** — `@NotBlank` validation constraints
