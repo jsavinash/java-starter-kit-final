@@ -38,326 +38,115 @@ includeBuild("platforms")
 includeBuild("build-logic")
 
 // ---------------------------------------------------------------------------
-// Spring Boot Application — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:webapp")
-
-// ---------------------------------------------------------------------------
-// Spring IoC Container — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:ioc-example")
-
-// ---------------------------------------------------------------------------
-// Spring Boot Starters & Auto-configuration — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:starters-autoconfig")
-
-// ---------------------------------------------------------------------------
-// Spring Data JPA — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-jpa")
-
-// ---------------------------------------------------------------------------
-// Spring Boot REST APIs — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-boot-rest")
-
-// ---------------------------------------------------------------------------
-// Spring Boot Actuator & DevTools — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:actuator-devtools")
-
-// ---------------------------------------------------------------------------
-// Greeting Service Library — Custom Auto-Configuration Example
-// ---------------------------------------------------------------------------
-include("apps:greeting-service")
-
-// ---------------------------------------------------------------------------
-// Hello World Basics — Study Material Example
-// ---------------------------------------------------------------------------
-include("apps:hello-world-basics")
-
-// ---------------------------------------------------------------------------
-// Spring Security — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-security")
-
-// ---------------------------------------------------------------------------
-// Spring Data MongoDB — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-mongodb")
-
-// ---------------------------------------------------------------------------
-// Spring Data Redis — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-redis")
-
-// ---------------------------------------------------------------------------
-// Spring Batch — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-batch")
-
-// ---------------------------------------------------------------------------
-// Spring Integration — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-integration")
-
-// ---------------------------------------------------------------------------
-// Spring for Apache Kafka — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-kafka")
-
-// ---------------------------------------------------------------------------
-// Spring for GraphQL — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-graphql")
-
-// ---------------------------------------------------------------------------
-// Spring HATEOAS — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-hateoas")
-
-// ---------------------------------------------------------------------------
-// Spring REST Docs — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-restdocs")
-
-// ---------------------------------------------------------------------------
-// Spring Session — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-session")
-
-// ---------------------------------------------------------------------------
-// Spring LDAP — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-ldap")
-
-// ---------------------------------------------------------------------------
-// Spring Web Services — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-web-services")
-
-// ---------------------------------------------------------------------------
-// Spring Authorization Server — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-authorization-server")
-
-// ---------------------------------------------------------------------------
-// Spring Cloud Gateway — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-cloud-gateway")
-
-// ---------------------------------------------------------------------------
-// Spring WebFlux — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-webflux")
-
-// ---------------------------------------------------------------------------
-// Spring AMQP — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-amqp")
-
-// ---------------------------------------------------------------------------
-// Spring Data Elasticsearch — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-elasticsearch")
-
-// ---------------------------------------------------------------------------
-// Spring Data Neo4j — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-neo4j")
-
-// ---------------------------------------------------------------------------
-// Spring Data Cassandra — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-cassandra")
-
-// ---------------------------------------------------------------------------
-// Spring Data Couchbase — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-couchbase")
-
-// ---------------------------------------------------------------------------
-// Spring Vault — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-vault")
-
-// ---------------------------------------------------------------------------
-// Spring Web Flow — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-web-flow")
-
-// ---------------------------------------------------------------------------
-// Spring Pulsar — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-pulsar")
-
-// ---------------------------------------------------------------------------
-// Spring Shell — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-shell")
-
-// ---------------------------------------------------------------------------
-// Spring Plugin — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-plugin")
-
-// ---------------------------------------------------------------------------
-// Spring Data REST — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-rest")
-
-// ---------------------------------------------------------------------------
-// Spring AI — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-ai")
-
-// ---------------------------------------------------------------------------
-// Spring gRPC — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-grpc")
-
-// ---------------------------------------------------------------------------
-// Spring Modulith — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-modulith")
-
-// ---------------------------------------------------------------------------
-// Spring Data R2DBC — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-r2dbc")
-
-// ---------------------------------------------------------------------------
-// Spring Data JDBC — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-jdbc")
-
-// ---------------------------------------------------------------------------
-// Spring Data Commons — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-commons")
-
-// ---------------------------------------------------------------------------
-// Spring Data Envers — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-envers")
-
-// ---------------------------------------------------------------------------
-// Spring Security Kerberos — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-security-kerberos")
-
-// ---------------------------------------------------------------------------
-// Spring Data LDAP — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-ldap")
-
-// ---------------------------------------------------------------------------
-// Spring Cloud Config — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-cloud-config")
-
-// ---------------------------------------------------------------------------
-// Spring Cloud OpenFeign — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-cloud-openfeign")
-
-// ---------------------------------------------------------------------------
-// Spring Cloud Stream — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-cloud-stream")
-
-// ---------------------------------------------------------------------------
-// Spring Cloud Netflix Eureka — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-cloud-netflix-eureka")
-
-// ---------------------------------------------------------------------------
-// Spring Cloud Consul — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-cloud-consul")
-
-// ---------------------------------------------------------------------------
-// Spring Cloud Netflix Ribbon — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-cloud-netflix-ribbon")
-
-// ---------------------------------------------------------------------------
-// Spring Cloud Netflix Hystrix — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-cloud-netflix-hystrix")
-
-// ---------------------------------------------------------------------------
-// Spring Cloud Sleuth — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-cloud-sleuth")
-
-// ---------------------------------------------------------------------------
-// Spring Boot DevTools — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-boot-devtools")
-
-// ---------------------------------------------------------------------------
-// Spring Cloud Bus — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-cloud-bus")
-
-// ---------------------------------------------------------------------------
-// Spring Cloud Task — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-cloud-task")
-
-// ---------------------------------------------------------------------------
-// Spring Cloud Zookeeper — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-cloud-zookeeper")
-
-// ---------------------------------------------------------------------------
-// Spring Batch Extensions — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-batch-extensions")
-
-// ---------------------------------------------------------------------------
-// Spring Data KeyValue — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-keyvalue")
-
-// ---------------------------------------------------------------------------
-// Spring Integration Flow — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-integration-flow")
-
-// ---------------------------------------------------------------------------
-// Spring Boot Data Geode — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-boot-data-geode")
-
-// ---------------------------------------------------------------------------
-// Spring Guice — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-guice")
-
-// ---------------------------------------------------------------------------
-// Spring PetClinic — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-petclinic")
-
-// ---------------------------------------------------------------------------
-// Spring CredHub — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-credhub")
-
-// ---------------------------------------------------------------------------
-// Spring Data Relational — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-data-relational")
-
-// ---------------------------------------------------------------------------
-// Spring Session Data Geode — Example Subproject
-// ---------------------------------------------------------------------------
-include("apps:spring-session-data-geode")
+// ====== FUNDAMENTALS CATEGORY ======
+// Core Spring Boot concepts: IoC, auto-configuration, web apps, REST, etc.
+// ---------------------------------------------------------------------------
+include("apps:fundamentals:webapp")
+include("apps:fundamentals:ioc-example")
+include("apps:fundamentals:starters-autoconfig")
+include("apps:fundamentals:spring-boot-rest")
+include("apps:fundamentals:actuator-devtools")
+include("apps:fundamentals:greeting-service")
+include("apps:fundamentals:hello-world-basics")
+include("apps:fundamentals:spring-boot-devtools")
+include("apps:fundamentals:spring-petclinic")
+include("apps:fundamentals:spring-aot")
+include("apps:fundamentals:spring-framework-loaded")
+
+// ---------------------------------------------------------------------------
+// ====== DATA CATEGORY ======
+// Spring Data ecosystem: JPA, MongoDB, Redis, Cassandra, Elasticsearch, etc.
+// ---------------------------------------------------------------------------
+include("apps:data:spring-data-jpa")
+include("apps:data:spring-data-mongodb")
+include("apps:data:spring-data-redis")
+include("apps:data:spring-data-elasticsearch")
+include("apps:data:spring-data-neo4j")
+include("apps:data:spring-data-cassandra")
+include("apps:data:spring-data-couchbase")
+include("apps:data:spring-data-rest")
+include("apps:data:spring-data-r2dbc")
+include("apps:data:spring-data-jdbc")
+include("apps:data:spring-data-commons")
+include("apps:data:spring-data-envers")
+include("apps:data:spring-data-ldap")
+include("apps:data:spring-data-keyvalue")
+include("apps:data:spring-data-relational")
+include("apps:data:spring-data-bom")
+include("apps:data:spring-data-dev-tools")
+include("apps:data:spring-data-samples")
+include("apps:data:spring-boot-data-geode")
+
+// ---------------------------------------------------------------------------
+// ====== SECURITY CATEGORY ======
+// Authentication, authorization, session management, credentials, etc.
+// ---------------------------------------------------------------------------
+include("apps:security:spring-security")
+include("apps:security:spring-security-kerberos")
+include("apps:security:spring-ldap")
+include("apps:security:spring-authorization-server")
+include("apps:security:spring-session")
+include("apps:security:spring-session-data-geode")
+include("apps:security:spring-vault")
+include("apps:security:spring-credhub")
+
+// ---------------------------------------------------------------------------
+// ====== WEB CATEGORY ======
+// Web layer: reactive, SOAP, GraphQL, gRPC, HATEOAS, web flow, etc.
+// ---------------------------------------------------------------------------
+include("apps:web:spring-web-services")
+include("apps:web:spring-webflux")
+include("apps:web:spring-web-flow")
+include("apps:web:spring-graphql")
+include("apps:web:spring-grpc")
+include("apps:web:spring-hateoas")
+
+// ---------------------------------------------------------------------------
+// ====== BATCH & INTEGRATION CATEGORY ======
+// Batch processing, messaging integration, enterprise integration patterns.
+// ---------------------------------------------------------------------------
+include("apps:batch-integration:spring-batch")
+include("apps:batch-integration:spring-batch-extensions")
+include("apps:batch-integration:spring-integration")
+include("apps:batch-integration:spring-integration-flow")
+
+// ---------------------------------------------------------------------------
+// ====== CLOUD CATEGORY ======
+// Spring Cloud ecosystem: configuration, discovery, gateways, circuit breakers, etc.
+// ---------------------------------------------------------------------------
+include("apps:cloud:spring-cloud-gateway")
+include("apps:cloud:spring-cloud-config")
+include("apps:cloud:spring-cloud-openfeign")
+include("apps:cloud:spring-cloud-netflix-eureka")
+include("apps:cloud:spring-cloud-netflix-ribbon")
+include("apps:cloud:spring-cloud-netflix-hystrix")
+include("apps:cloud:spring-cloud-consul")
+include("apps:cloud:spring-cloud-sleuth")
+include("apps:cloud:spring-cloud-bus")
+include("apps:cloud:spring-cloud-task")
+include("apps:cloud:spring-cloud-zookeeper")
+
+// ---------------------------------------------------------------------------
+// ====== MESSAGING CATEGORY ======
+// Message-driven architectures: AMQP, Kafka, Pulsar, Cloud Stream.
+// ---------------------------------------------------------------------------
+include("apps:messaging:spring-amqp")
+include("apps:messaging:spring-kafka")
+include("apps:messaging:spring-pulsar")
+include("apps:messaging:spring-cloud-stream")
+
+// ---------------------------------------------------------------------------
+// ====== EXTENSIONS CATEGORY ======
+// Additional Spring ecosystem extensions: Shell, AI, Plugin, Modulith, Guice.
+// ---------------------------------------------------------------------------
+include("apps:extensions:spring-ai")
+include("apps:extensions:spring-shell")
+include("apps:extensions:spring-plugin")
+include("apps:extensions:spring-modulith")
+include("apps:extensions:spring-guice")
 
 // ---------------------------------------------------------------------------
-// Spring AOT — Example Subproject
+// ====== TESTING CATEGORY ======
+// Testing tools and documentation: REST Docs, etc.
 // ---------------------------------------------------------------------------
-include("apps:spring-aot")
+include("apps:testing:spring-restdocs")
