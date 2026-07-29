@@ -1,12 +1,12 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.petclinic.web;
 
 import com.javastarterkit.petclinic.model.Owner;
 import com.javastarterkit.petclinic.service.ClinicService;
+import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/owners")

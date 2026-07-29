@@ -1,11 +1,10 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.elasticsearch.service;
-
-import java.util.List;
-
-import org.springframework.stereotype.Service;
 
 import com.javastarterkit.elasticsearch.entity.ProductDocument;
 import com.javastarterkit.elasticsearch.repository.ProductRepository;
+import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {

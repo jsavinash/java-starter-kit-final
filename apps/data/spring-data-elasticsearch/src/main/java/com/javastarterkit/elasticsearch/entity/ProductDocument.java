@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.elasticsearch.entity;
 
 import org.springframework.data.annotation.Id;
@@ -23,8 +24,7 @@ public class ProductDocument {
     @Field(type = FieldType.Text)
     private String description;
 
-    public ProductDocument() {
-    }
+    public ProductDocument() {}
 
     public ProductDocument(String id, String name, double price, String category, String description) {
         this.id = id;

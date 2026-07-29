@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.session;
 
 import org.springframework.boot.SpringApplication;

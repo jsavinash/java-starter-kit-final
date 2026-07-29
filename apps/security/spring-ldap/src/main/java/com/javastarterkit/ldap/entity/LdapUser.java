@@ -1,7 +1,5 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.ldap.entity;
-
-import org.springframework.ldap.core.LdapEntry;
-import org.springframework.ldap.core.LdapNameBuilder;
 
 public class LdapUser {
 
@@ -11,8 +9,7 @@ public class LdapUser {
     private String email;
     private String department;
 
-    public LdapUser() {
-    }
+    public LdapUser() {}
 
     public LdapUser(String uid, String cn, String sn, String email, String department) {
         this.uid = uid;

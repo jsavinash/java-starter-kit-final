@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.vault;
 
 import org.springframework.boot.SpringApplication;

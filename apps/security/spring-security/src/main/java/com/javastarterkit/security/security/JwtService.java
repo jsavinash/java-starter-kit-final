@@ -1,19 +1,17 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.security.security;
-
-import java.security.Key;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtService {
@@ -37,12 +35,13 @@ public class JwtService {
     public UserDetails extractUserDetails(String token) {
         String username = extractUsername(token);
         List<String> roles = extractRoles(token);
-        
+
         return new org.springframework.security.core.userdetails.User(
                 username,
                 "",
-                roles.stream().map(role -> (GrantedAuthority) () -> "ROLE_" + role).collect(Collectors.toList())
-        );
+                roles.stream()
+                        .map(role -> (GrantedAuthority) () -> "ROLE_" + role)
+                        .collect(Collectors.toList()));
     }
 
     public String generateToken(String username, List<String> roles) {
@@ -62,14 +61,14 @@ public class JwtService {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-            
+
             return !claims.getExpiration().before(new Date());
         } catch (Exception e) {
             return false;
         }
     }
 
-    private Key getSignInKey() {
+    private javax.crypto.SecretKey getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }

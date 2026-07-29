@@ -23,6 +23,7 @@ jackson = "2.18.3"
 
 # Web / Server
 spring-boot = "4.0.7"
+spring-cloud = "2023.0.7"
 spring-dependency-management = "1.1.7"
 
 # Code Formatting
@@ -57,6 +58,15 @@ springdoc = "2.8.6"
 # Flyway - Database migration tool
 flyway = "11.6.0"
 
+# JJWT - JSON Web Token for JWT support
+jjwt = "0.12.6"
+
+# Flapdoodle - Embedded MongoDB for testing
+flapdoodle-embed-mongo = "4.16.4"
+
+# Spring Authorization Server
+spring-authorization-server = "1.3.1"
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Code Quality, Security & Testing Plugins
 # ──────────────────────────────────────────────────────────────────────────────
@@ -72,7 +82,7 @@ spotbugs-gradle-plugin = "6.5.9"
 owasp-dependency-check = "12.2.2"
 
 # JaCoCo - Code coverage
-jacoco = "0.8.12"
+jacoco = "0.8.13"
 
 # SonarQube - Code quality dashboard integration
 sonarqube = "7.3.1.8318"
@@ -119,6 +129,20 @@ spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-star
 spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor" }
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools" }
 spring-boot-autoconfigure = { module = "org.springframework.boot:spring-boot-autoconfigure" }
+spring-boot-starter-amqp = { module = "org.springframework.boot:spring-boot-starter-amqp" }
+spring-boot-starter-aop = { module = "org.springframework.boot:spring-boot-starter-aop" }
+spring-boot-starter-artemis = { module = "org.springframework.boot:spring-boot-starter-artemis" }
+spring-boot-starter-cache = { module = "org.springframework.boot:spring-boot-starter-cache" }
+spring-boot-starter-data-geode = { module = "org.springframework.boot:spring-boot-starter-data-geode" }
+spring-boot-starter-data-ldap = { module = "org.springframework.boot:spring-boot-starter-data-ldap" }
+spring-boot-starter-data-r2dbc = { module = "org.springframework.boot:spring-boot-starter-data-r2dbc" }
+spring-boot-starter-data-rest = { module = "org.springframework.boot:spring-boot-starter-data-rest" }
+spring-boot-starter-graphql = { module = "org.springframework.boot:spring-boot-starter-graphql" }
+spring-boot-starter-hateoas = { module = "org.springframework.boot:spring-boot-starter-hateoas" }
+spring-boot-starter-mail = { module = "org.springframework.boot:spring-boot-starter-mail" }
+spring-boot-starter-pulsar = { module = "org.springframework.boot:spring-boot-starter-pulsar" }
+spring-boot-starter-vault = { module = "org.springframework.boot:spring-boot-starter-vault" }
+spring-boot-starter-websocket = { module = "org.springframework.boot:spring-boot-starter-websocket" }
 
 # Spring Cloud starters
 spring-cloud-starter-bus-amqp = { module = "org.springframework.cloud:spring-cloud-starter-bus-amqp" }
@@ -132,9 +156,20 @@ spring-cloud-starter-consul-discovery = { module = "org.springframework.cloud:sp
 spring-cloud-starter-zookeeper-discovery = { module = "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery" }
 spring-cloud-starter-netflix-hystrix = { module = "org.springframework.cloud:spring-cloud-starter-netflix-hystrix" }
 spring-cloud-starter-netflix-ribbon = { module = "org.springframework.cloud:spring-cloud-starter-netflix-ribbon" }
+spring-cloud-starter-circuitbreaker-resilience4j = { module = "org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j" }
+spring-cloud-starter-loadbalancer = { module = "org.springframework.cloud:spring-cloud-starter-loadbalancer" }
+
+# Spring Cloud Sleuth
+spring-cloud-sleuth-zipkin = { module = "org.springframework.cloud:spring-cloud-sleuth-zipkin" }
 
 # Spring Cloud Config
 spring-cloud-config-server = { module = "org.springframework.cloud:spring-cloud-config-server" }
+
+# Spring Cloud Function
+spring-cloud-function-context = { module = "org.springframework.cloud:spring-cloud-function-context" }
+
+# Spring Authorization Server
+spring-authorization-server = { module = "org.springframework.security:spring-authorization-server" }
 
 # Spring Integration
 spring-integration-core = { module = "org.springframework.integration:spring-integration-core" }
@@ -147,6 +182,78 @@ spring-integration-flow = { module = "org.springframework.integration:spring-int
 
 # Databases
 h2 = { module = "com.h2database:h2" }
+r2dbc-h2 = { module = "io.r2dbc:r2dbc-h2" }
+
+# Caching
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine" }
+
+# Security Extensions
+spring-security-kerberos = { module = "org.springframework.security:spring-security-kerberos" }
+spring-session-data-geode = { module = "org.springframework.session:spring-session-data-geode" }
+spring-session-data-redis = { module = "org.springframework.session:spring-session-data-redis" }
+spring-credhub = { module = "org.springframework.credhub:spring-credhub" }
+
+# Spring Integration
+spring-cloud-stream = { module = "org.springframework.cloud:spring-cloud-stream" }
+spring-cloud-stream-binder-rabbit = { module = "org.springframework.cloud:spring-cloud-stream-binder-rabbit" }
+spring-kafka = { module = "org.springframework.kafka:spring-kafka" }
+spring-kafka-test = { module = "org.springframework.kafka:spring-kafka-test" }
+
+# Spring Web
+spring-ws-core = { module = "org.springframework.ws:spring-ws-core" }
+spring-webflow = { module = "org.springframework.webflow:spring-webflow" }
+spring-grpc = { module = "org.springframework:spring-grpc" }
+
+# Spring Data
+spring-data-keyvalue = { module = "org.springframework.data:spring-data-keyvalue" }
+spring-data-dev-tools = { module = "org.springframework.data:spring-data-dev-tools" }
+spring-data-bom = { module = "org.springframework.data:spring-data-bom" }
+hibernate-envers = { module = "org.hibernate.orm:hibernate-envers" }
+
+# Spring AI
+spring-ai-core = { module = "org.springframework.ai:spring-ai-core" }
+
+# Spring Modulith
+spring-modulith-core = { module = "org.springframework.modulith:spring-modulith-core" }
+
+# Spring Retry
+spring-retry = { module = "org.springframework.retry:spring-retry" }
+
+# Spring Shell
+spring-shell-starter = { module = "org.springframework.shell:spring-shell-starter" }
+
+# Spring Plugin
+spring-plugin = { module = "org.springframework.plugin:spring-plugin" }
+
+# Spring Guice
+spring-guice = { module = "org.springframework:spring-guice" }
+
+# Spring AOT
+spring-aot = { module = "org.springframework.experimental:spring-aot" }
+
+# Spring Loaded
+spring-loaded = { module = "org.springframework:spring-loaded" }
+
+# Spring Rewrite
+spring-rewrite = { module = "org.springframework.experimental:spring-rewrite" }
+
+# Testing
+testcontainers = { module = "org.testcontainers:testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql" }
+spring-restdocs-core = { module = "org.springframework.restdocs:spring-restdocs-core" }
+spring-restdocs-mockmvc = { module = "org.springframework.restdocs:spring-restdocs-mockmvc" }
+
+# Other
+guice = { module = "com.google.inject:guice" }
+
+# JWT
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
+
+# Embedded MongoDB for testing
+flapdoodle-embed-mongo = { module = "de.flapdoodle.embed:de.flapdoodle.embed.mongo", version.ref = "flapdoodle-embed-mongo" }
 
 # Kotlin stdlib (for Gradle DSL compatibility)
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }

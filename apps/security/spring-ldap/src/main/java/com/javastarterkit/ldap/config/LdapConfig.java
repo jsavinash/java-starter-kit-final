@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.ldap.config;
 
 import org.springframework.beans.factory.annotation.Value;

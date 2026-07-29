@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.authserver.config;
 
 import org.springframework.context.annotation.Bean;
@@ -12,13 +13,12 @@ public class AuthorizationServerConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/.well-known/**", "/oauth2/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form.permitAll());
-        
+        http.authorizeHttpRequests(auth -> auth.requestMatchers("/.well-known/**", "/oauth2/**")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
+                .formLogin(form -> form.permitAll());
+
         return http.build();
     }
 }

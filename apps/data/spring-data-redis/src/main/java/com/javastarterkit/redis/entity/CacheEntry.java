@@ -1,7 +1,7 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.redis.entity;
 
 import java.io.Serializable;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -15,8 +15,7 @@ public class CacheEntry implements Serializable {
 
     private long ttlSeconds;
 
-    public CacheEntry() {
-    }
+    public CacheEntry() {}
 
     public CacheEntry(String key, String value, long ttlSeconds) {
         this.key = key;

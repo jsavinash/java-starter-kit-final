@@ -1,18 +1,16 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.hateoas.web;
 
+import com.javastarterkit.hateoas.assembler.ProductModelAssembler;
+import com.javastarterkit.hateoas.entity.Product;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.javastarterkit.hateoas.assembler.ProductModelAssembler;
-import com.javastarterkit.hateoas.entity.Product;
-
-import org.springframework.hateoas.EntityModel;
 
 @RestController
 @RequestMapping("/api/products")
@@ -31,22 +29,18 @@ public class ProductController {
 
     @GetMapping
     public List<EntityModel<Product>> getAllProducts() {
-        return products.stream()
-                .map(assembler::toModel)
-                .toList();
+        return products.stream().map(assembler::toModel).toList();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<Product>> getProduct(@PathVariable Long id) {
-        Product product = products.stream()
-                .filter(p -> p.getId().equals(id))
-                .findFirst()
-                .orElse(null);
-        
+        Product product =
+                products.stream().filter(p -> p.getId().equals(id)).findFirst().orElse(null);
+
         if (product == null) {
             return ResponseEntity.notFound().build();
         }
-        
+
         return ResponseEntity.ok(assembler.toModel(product));
     }
 }

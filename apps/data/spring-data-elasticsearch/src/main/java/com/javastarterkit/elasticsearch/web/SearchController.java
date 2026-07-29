@@ -1,15 +1,13 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.elasticsearch.web;
 
+import com.javastarterkit.elasticsearch.entity.ProductDocument;
+import com.javastarterkit.elasticsearch.service.ProductService;
 import java.util.List;
-
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.javastarterkit.elasticsearch.entity.ProductDocument;
-import com.javastarterkit.elasticsearch.service.ProductService;
 
 @RestController
 @RequestMapping("/api/products")

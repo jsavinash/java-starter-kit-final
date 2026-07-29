@@ -1,12 +1,12 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.amqp.web;
 
+import com.javastarterkit.amqp.service.MessageProducer;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.javastarterkit.amqp.service.MessageProducer;
 
 @RestController
 @RequestMapping("/api/amqp")

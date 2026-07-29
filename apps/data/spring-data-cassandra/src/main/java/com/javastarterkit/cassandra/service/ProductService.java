@@ -1,11 +1,10 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.cassandra.service;
-
-import java.util.List;
-
-import org.springframework.stereotype.Service;
 
 import com.javastarterkit.cassandra.entity.Product;
 import com.javastarterkit.cassandra.repository.ProductRepository;
+import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {

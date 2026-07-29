@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.integration.web;
 
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class IntegrationController {
         Message<String> msg = MessageBuilder.withPayload(message)
                 .setHeader("timestamp", System.currentTimeMillis())
                 .build();
-        
+
         inputChannel.send(msg);
         return ResponseEntity.ok("Message sent to integration flow");
     }

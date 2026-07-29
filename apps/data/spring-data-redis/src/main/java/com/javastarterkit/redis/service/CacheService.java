@@ -1,13 +1,12 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.redis.service;
 
+import com.javastarterkit.redis.entity.CacheEntry;
 import java.util.Collection;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
-import com.javastarterkit.redis.entity.CacheEntry;
 
 @Service
 public class CacheService {

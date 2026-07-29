@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.hateoas.entity;
 
 public class Product {
@@ -6,8 +7,7 @@ public class Product {
     private String name;
     private double price;
 
-    public Product() {
-    }
+    public Product() {}
 
     public Product(Long id, String name, double price) {
         this.id = id;

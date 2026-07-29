@@ -5,13 +5,12 @@ import com.javastarterkit.rest.dto.ProductDTO;
 import com.javastarterkit.rest.exception.ResourceNotFoundException;
 import com.javastarterkit.rest.service.ProductService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * REST Controller demonstrating validation and best practices.
@@ -56,7 +55,8 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductDTO productDetails) {
+    public ResponseEntity<Map<String, Object>> updateProduct(
+            @PathVariable Long id, @Valid @RequestBody ProductDTO productDetails) {
         Map<String, Object> response = new HashMap<>();
         ProductDTO updatedProduct = productService.updateProduct(id, productDetails);
         if (updatedProduct != null) {

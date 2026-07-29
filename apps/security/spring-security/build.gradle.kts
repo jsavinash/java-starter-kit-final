@@ -27,9 +27,9 @@ dependencies {
     implementation(libs.findLibrary("spring-boot-starter-security").get())
 
     // JWT support (jjwt - JSON Web Token)
-    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
-    implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
-    implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
+    implementation(libs.findLibrary("jjwt-api").get())
+    implementation(libs.findLibrary("jjwt-impl").get())
+    implementation(libs.findLibrary("jjwt-jackson").get())
 
     // Test starter
     testImplementation(libs.findLibrary("spring-boot-starter-test").get())

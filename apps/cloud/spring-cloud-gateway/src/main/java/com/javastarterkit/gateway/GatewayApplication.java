@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.gateway;
 
 import org.springframework.boot.SpringApplication;
@@ -16,12 +17,9 @@ public class GatewayApplication {
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route("user-service", r -> r.path("/api/users/**")
-                        .uri("http://localhost:8081"))
-                .route("product-service", r -> r.path("/api/products/**")
-                        .uri("http://localhost:8082"))
-                .route("order-service", r -> r.path("/api/orders/**")
-                        .uri("http://localhost:8083"))
+                .route("user-service", r -> r.path("/api/users/**").uri("http://localhost:8081"))
+                .route("product-service", r -> r.path("/api/products/**").uri("http://localhost:8082"))
+                .route("order-service", r -> r.path("/api/orders/**").uri("http://localhost:8083"))
                 .build();
     }
 }

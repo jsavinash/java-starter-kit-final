@@ -1,13 +1,13 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.ws.endpoint;
 
+import com.javastarterkit.ws.generated.GetHelloRequest;
+import com.javastarterkit.ws.generated.GetHelloResponse;
+import com.javastarterkit.ws.generated.ObjectFactory;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
-import com.javastarterkit.ws.generated.ObjectFactory;
-import com.javastarterkit.ws.generated.GetHelloRequest;
-import com.javastarterkit.ws.generated.GetHelloResponse;
 
 @Endpoint
 public class HelloEndpoint {

@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.amqp.config;
 
 import org.springframework.amqp.core.Queue;

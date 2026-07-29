@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.petclinic.web;
 
 import org.springframework.stereotype.Controller;

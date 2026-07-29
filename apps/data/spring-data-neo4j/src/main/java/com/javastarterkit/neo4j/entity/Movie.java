@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.neo4j.entity;
 
 import org.springframework.data.neo4j.core.schema.Id;
@@ -16,8 +17,7 @@ public class Movie {
     @Property("releaseYear")
     private int year;
 
-    public Movie() {
-    }
+    public Movie() {}
 
     public Movie(String title, String description, int year) {
         this.title = title;

@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.graphql.entity;
 
 public class Book {
@@ -6,8 +7,7 @@ public class Book {
     private String title;
     private String author;
 
-    public Book() {
-    }
+    public Book() {}
 
     public Book(Long id, String title, String author) {
         this.id = id;

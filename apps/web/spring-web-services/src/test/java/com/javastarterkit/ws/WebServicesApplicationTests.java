@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.ws;
 
 import org.junit.jupiter.api.Test;

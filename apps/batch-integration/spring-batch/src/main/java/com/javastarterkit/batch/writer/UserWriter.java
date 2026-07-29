@@ -1,11 +1,10 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.batch.writer;
 
+import com.javastarterkit.batch.entity.UserRecord;
 import java.util.List;
-
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
-
-import com.javastarterkit.batch.entity.UserRecord;
 
 @Component
 public class UserWriter implements ItemWriter<UserRecord> {

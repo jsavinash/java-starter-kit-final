@@ -5,7 +5,8 @@ plugins {
 description = "Greeting Service Library"
 
 // Disable annotation processor added by convention plugin
-configurations.named("annotationProcessor")
+configurations
+    .named("annotationProcessor")
     .configure {
         dependencies.clear()
     }

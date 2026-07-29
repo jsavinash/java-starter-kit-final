@@ -1,8 +1,10 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.session.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,15 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
 @RestController
 @RequestMapping("/api/session")
 public class SessionController {
 
     @PostMapping("/set")
-    public ResponseEntity<String> setSessionAttribute(HttpServletRequest request, @RequestBody Map<String, String> data) {
+    public ResponseEntity<String> setSessionAttribute(
+            HttpServletRequest request, @RequestBody Map<String, String> data) {
         HttpSession session = request.getSession();
         data.forEach(session::setAttribute);
         return ResponseEntity.ok("Session attributes set");
@@ -33,8 +33,11 @@ public class SessionController {
             response.put(key, value != null ? value.toString() : null);
         } else {
             // Return all session attributes
-            request.getSession().getAttributeNames().asIterator()
-                    .forEachRemaining(attr -> response.put(attr, session.getAttribute(attr).toString()));
+            request.getSession()
+                    .getAttributeNames()
+                    .asIterator()
+                    .forEachRemaining(attr ->
+                            response.put(attr, session.getAttribute(attr).toString()));
         }
         return ResponseEntity.ok(response);
     }

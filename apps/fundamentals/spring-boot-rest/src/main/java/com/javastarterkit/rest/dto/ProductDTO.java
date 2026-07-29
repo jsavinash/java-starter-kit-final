@@ -31,8 +31,7 @@ public class ProductDTO {
 
     private String category;
 
-    public ProductDTO() {
-    }
+    public ProductDTO() {}
 
     public ProductDTO(Long id, String name, String description, Double price, Integer quantity, String category) {
         this.id = id;

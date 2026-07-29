@@ -34,7 +34,7 @@ dependencies {
 
     // Test starter
     testImplementation(libs.findLibrary("spring-boot-starter-test").get())
-    testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo:4.16.4")
+    testImplementation(libs.findLibrary("flapdoodle-embed-mongo").get())
 }
 
 springBoot {

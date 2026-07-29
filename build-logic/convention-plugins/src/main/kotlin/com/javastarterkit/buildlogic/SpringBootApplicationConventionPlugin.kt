@@ -30,7 +30,7 @@ class SpringBootApplicationConventionPlugin : Plugin<Project> {
         // Apply foundational plugins
         project.plugins.apply("com.javastarterkit.buildlogic.java-base")
         project.plugins.apply("com.javastarterkit.buildlogic.testing")
-       // project.plugins.apply("com.javastarterkit.buildlogic.code-quality")
+        project.plugins.apply("com.javastarterkit.buildlogic.code-quality")
 
         // Apply Spring Boot plugins
         project.plugins.apply("org.springframework.boot")

@@ -1,15 +1,14 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.ldap.web;
 
+import com.javastarterkit.ldap.entity.LdapUser;
+import com.javastarterkit.ldap.service.LdapService;
 import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.javastarterkit.ldap.entity.LdapUser;
-import com.javastarterkit.ldap.service.LdapService;
 
 @RestController
 @RequestMapping("/api/ldap")

@@ -1,13 +1,13 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.petclinic.service;
 
 import com.javastarterkit.petclinic.model.Owner;
 import com.javastarterkit.petclinic.model.Pet;
 import com.javastarterkit.petclinic.model.PetType;
 import com.javastarterkit.petclinic.repository.OwnerRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ClinicService {

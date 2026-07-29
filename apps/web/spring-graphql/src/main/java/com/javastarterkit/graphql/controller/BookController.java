@@ -1,14 +1,13 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.graphql.controller;
 
+import com.javastarterkit.graphql.entity.Book;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
-
-import com.javastarterkit.graphql.entity.Book;
 
 @Controller
 public class BookController {
@@ -44,11 +43,8 @@ public class BookController {
 
     @MutationMapping
     public Book updateBook(@Argument Long id, @Argument String title, @Argument String author) {
-        Book book = books.stream()
-                .filter(b -> b.getId().equals(id))
-                .findFirst()
-                .orElse(null);
-        
+        Book book = books.stream().filter(b -> b.getId().equals(id)).findFirst().orElse(null);
+
         if (book != null) {
             if (title != null) book.setTitle(title);
             if (author != null) book.setAuthor(author);

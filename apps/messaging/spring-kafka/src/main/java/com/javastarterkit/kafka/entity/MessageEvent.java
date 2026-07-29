@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.kafka.entity;
 
 public class MessageEvent {
@@ -6,8 +7,7 @@ public class MessageEvent {
     private String content;
     private String source;
 
-    public MessageEvent() {
-    }
+    public MessageEvent() {}
 
     public MessageEvent(String id, String content, String source) {
         this.id = id;

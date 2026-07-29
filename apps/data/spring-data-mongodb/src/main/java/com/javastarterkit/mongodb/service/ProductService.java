@@ -1,12 +1,11 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.mongodb.service;
-
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.javastarterkit.mongodb.entity.ProductDocument;
 import com.javastarterkit.mongodb.repository.ProductRepository;
+import java.util.List;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductService {
@@ -24,8 +23,8 @@ public class ProductService {
 
     @Transactional
     public ProductDocument updateProduct(String id, ProductDocument updatedProduct) {
-        ProductDocument existing = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found: " + id));
+        ProductDocument existing =
+                productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found: " + id));
         existing.setName(updatedProduct.getName());
         existing.setPrice(updatedProduct.getPrice());
         existing.setCategory(updatedProduct.getCategory());
@@ -43,8 +42,7 @@ public class ProductService {
     }
 
     public ProductDocument findById(String id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found: " + id));
+        return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found: " + id));
     }
 
     public List<ProductDocument> findByCategory(String category) {

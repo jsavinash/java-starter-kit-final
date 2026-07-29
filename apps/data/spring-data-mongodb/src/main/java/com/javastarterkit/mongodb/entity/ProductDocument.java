@@ -1,11 +1,11 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.mongodb.entity;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "products")
 public class ProductDocument {
@@ -24,8 +24,7 @@ public class ProductDocument {
 
     private boolean available = true;
 
-    public ProductDocument() {
-    }
+    public ProductDocument() {}
 
     public ProductDocument(String name, double price, String category) {
         this.name = name;

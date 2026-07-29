@@ -2,13 +2,11 @@
 package com.javastarterkit.rest.service;
 
 import com.javastarterkit.rest.dto.ProductDTO;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.stereotype.Service;
 
 /**
  * Service class demonstrating REST API patterns with in-memory storage.
@@ -41,7 +39,7 @@ public class ProductService {
     public ProductDTO createProduct(ProductDTO product) {
         Long id = idGenerator.getAndIncrement();
         product.setId(id);
-        
+
         // Apply business rules
         if (product.getPrice() == null || product.getPrice() <= 0) {
             throw new IllegalArgumentException("Price must be greater than 0");
@@ -49,7 +47,7 @@ public class ProductService {
         if (product.getQuantity() == null || product.getQuantity() < 0) {
             throw new IllegalArgumentException("Quantity must be 0 or greater");
         }
-        
+
         products.put(id, product);
         return product;
     }
@@ -87,8 +85,7 @@ public class ProductService {
     public List<ProductDTO> searchProductsByName(String name) {
         List<ProductDTO> result = new ArrayList<>();
         for (ProductDTO product : products.values()) {
-            if (product.getName() != null && 
-                product.getName().toLowerCase().contains(name.toLowerCase())) {
+            if (product.getName() != null && product.getName().toLowerCase().contains(name.toLowerCase())) {
                 result.add(product);
             }
         }

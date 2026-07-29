@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.cassandra.entity;
 
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
@@ -8,11 +9,7 @@ import org.springframework.data.cassandra.core.mapping.Table;
 @Table("products")
 public class Product {
 
-    @PrimaryKeyColumn(
-            name = "id",
-            type = PrimaryKeyType.PARTITIONED,
-            ordinal = 0
-    )
+    @PrimaryKeyColumn(name = "id", type = PrimaryKeyType.PARTITIONED, ordinal = 0)
     private Long id;
 
     @Column("name")
@@ -24,8 +21,7 @@ public class Product {
     @Column("category")
     private String category;
 
-    public Product() {
-    }
+    public Product() {}
 
     public Product(Long id, String name, double price, String category) {
         this.id = id;

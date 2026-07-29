@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.integration.config;
 
 import org.springframework.context.annotation.Bean;

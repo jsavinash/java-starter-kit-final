@@ -1,3 +1,4 @@
+// Copyright © 2026 Java Starter Kit. All rights reserved.
 package com.javastarterkit.batch.entity;
 
 public class UserRecord {
@@ -8,8 +9,7 @@ public class UserRecord {
     private String email;
     private String department;
 
-    public UserRecord() {
-    }
+    public UserRecord() {}
 
     public UserRecord(Long id, String firstName, String lastName, String email, String department) {
         this.id = id;
