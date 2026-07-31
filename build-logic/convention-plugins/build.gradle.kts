@@ -34,6 +34,9 @@ dependencies {
     implementation(plugin(libs, "owasp-dependency-check"))
     implementation(plugin(libs, "spotbugs"))
     implementation(plugin(libs, "sonarqube"))
+
+    // Spring Dependency Management plugin - needed for DependencyManagementPluginExtension API
+    implementation("io.spring.gradle:dependency-management-plugin:${libs.findVersion("spring-dependency-management").get().displayName}")
 }
 
 fun plugin(libs: VersionCatalog, alias: String): String {

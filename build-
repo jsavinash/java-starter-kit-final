@@ -1,0 +1,128 @@
+package com.javastarterkit.buildlogic
+
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.tasks.JavaExec
+import org.gradle.jvm.tasks.Jar
+
+/**
+ * Spring Boot Application Convention Plugin
+ *
+ * Configures a Spring Boot executable application module with:
+ * - Spring Boot plugin and dependency management
+ * - Spring Boot platform BOM from the composite build
+ * - Spring Cloud BOM for Spring Cloud dependency management
+ * - BootJar packaging configuration
+ * - Application main class setup
+ * - Devtools support
+ * - Actuator support
+ * - Testing and code quality conventions
+ * - Jib containerization (Docker/OCI images)
+ * - Git Commit ID plugin for build metadata
+ * - Lombok annotation processing
+ * - MapStruct code generation
+ * - SpringDoc OpenAPI documentation
+ * - Flyway database migration support
+ */
+class SpringBootApplicationConventionPlugin : Plugin<Project> {
+
+    override fun apply(project: Project) {
+        // Apply foundational plugins
+        project.plugins.apply("com.javastarterkit.buildlogic.java-base")
+        project.plugins.apply("com.javastarterkit.buildlogic.testing")
+        project.plugins.apply("com.javastarterkit.buildlogic.code-quality")
+
+        // Apply Spring Boot plugins
+        project.plugins.apply("org.springframework.boot")
+        project.plugins.apply("io.spring.dependency-management")
+
+        // Apply Core Build & Packaging Plugins
+        project.plugins.apply("com.google.cloud.tools.jib")
+        project.plugins.apply("com.gorylenko.gradle-git-properties")
+
+        project.configureSpringBootApplication()
+        project.configureDependencies()
+        project.configureJib()
+        project.configureGitProperties()
+    }
+
+    private fun Project.configureSpringBootApplication() {
+        // Configure BootJar task
+        tasks.named("bootJar", Jar::class.java) {
+            archiveFileName.set("${project.name}.jar")
+        }
+
+        // Configure bootRun with remote debugging
+        tasks.named("bootRun", JavaExec::class.java) {
+            jvmArgs("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005")
+        }
+    }
+
+    private fun Project.configureDependencies() {
+        val libs = extensions.getByType(VersionCatalogsExtension::class.java)
+            .named("libs")
+
+        val deps = dependencies
+
+        // Import the Spring Boot platform BOM from the composite build
+        deps.add("implementation", deps.platform("com.javastarterkit:spring-boot:1.0.0-SNAPSHOT"))
+
+        // Import the Spring Cloud BOM via the dependency management plugin
+        // Uses Groovy interop to configure the extension without requiring
+        // the typed DependencyManagementPluginExtension class on the classpath
+        val springCloudVersion = libs.findVersion("spring-cloud").get().displayName
+        extensions.getByName("dependencyManagement").withGroovyBuilder {
+            "imports" {
+                "mavenBom"("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
+            }
+        }
+
+        // Spring Boot starters — versions managed by the platform BOM
+        deps.add("implementation", libs.findLibrary("spring-boot-starter").get())
+        deps.add("implementation", libs.findLibrary("spring-boot-starter-actuator").get())
+
+        // Configuration processor
+        deps.add("annotationProcessor", libs.findLibrary("spring-boot-configuration-processor").get())
+
+        // Devtools for development only
+        deps.add("developmentOnly", libs.findLibrary("spring-boot-devtools").get())
+
+        // ──────────────────────────────────────────────────────────────────────
+        // Code Generation & Architecture Plugins
+        // ──────────────────────────────────────────────────────────────────────
+
+        // Lombok - Boilerplate code reduction
+        deps.add("compileOnly", libs.findLibrary("lombok").get())
+        deps.add("annotationProcessor", libs.findLibrary("lombok").get())
+        deps.add("testCompileOnly", libs.findLibrary("lombok").get())
+        deps.add("testAnnotationProcessor", libs.findLibrary("lombok").get())
+
+        // MapStruct - Object mapping code generation
+        deps.add("implementation", libs.findLibrary("mapstruct").get())
+        deps.add("annotationProcessor", libs.findLibrary("mapstruct-processor").get())
+
+        // SpringDoc OpenAPI - Code-first API documentation
+        deps.add("implementation", libs.findLibrary("springdoc-openapi").get())
+
+        // Flyway - Database migration
+        deps.add("implementation", libs.findLibrary("flyway-core").get())
+    }
+
+    private fun Project.configureJib() {
+        // Jib is auto-configured via build.gradle.kts or jib configuration in application
+        // Default configuration is sufficient for most use cases
+        // Customize via project.jib { ... } in the application's build.gradle.kts
+    }
+
+    private fun Project.configureGitProperties() {
+        // Git properties plugin is auto-configured by default
+        // It generates META-INF/build-info.properties and git.properties
+        // These are consumed by Spring Boot Actuator's /info endpoint
+
+        // Ensure git properties are generated during compilation
+        tasks.matching { it.name == "compileJava" }.configureEach {
+            this.dependsOn("generateGitProperties")
+        }
+    }
+}

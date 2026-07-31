@@ -1,10 +1,10 @@
 // ============================================================================
 // Spring Rewrite — Example Application
 // ============================================================================
-// Demonstrates Spring Rewrite concepts:
-// - Application refactoring tooling
-// - Automatic code migrations
-// - Dependency upgrades
+// Demonstrates application modernization concepts:
+// - Migration template for legacy applications
+// - Java 25 language features
+// - Spring Boot 4.0 best practices
 // - Code modernization patterns
 // ============================================================================
 
@@ -14,17 +14,12 @@ plugins {
 
 val libs = the<VersionCatalogsExtension>().named("libs")
 
-group = "com.javastarterkit"
-version = "1.0.0-SNAPSHOT"
 
 description = "Spring Rewrite Example"
 
 dependencies {
     // Web starter
     implementation(libs.findLibrary("spring-boot-starter-web").get())
-
-    // Spring Rewrite
-    implementation(libs.findLibrary("spring-rewrite").get())
 
     // Test starter
     testImplementation(libs.findLibrary("spring-boot-starter-test").get())

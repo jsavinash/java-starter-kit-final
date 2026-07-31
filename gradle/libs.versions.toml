@@ -23,7 +23,7 @@ jackson = "2.18.3"
 
 # Web / Server
 spring-boot = "4.0.7"
-spring-cloud = "2023.0.7"
+spring-cloud = "2024.0.0"
 spring-dependency-management = "1.1.7"
 
 # Code Formatting
@@ -62,7 +62,7 @@ flyway = "11.6.0"
 jjwt = "0.12.6"
 
 # Flapdoodle - Embedded MongoDB for testing
-flapdoodle-embed-mongo = "4.16.4"
+flapdoodle-embed-mongo = "4.20.0"
 
 # Spring Authorization Server
 spring-authorization-server = "1.3.1"
@@ -144,23 +144,17 @@ spring-boot-starter-pulsar = { module = "org.springframework.boot:spring-boot-st
 spring-boot-starter-vault = { module = "org.springframework.boot:spring-boot-starter-vault" }
 spring-boot-starter-websocket = { module = "org.springframework.boot:spring-boot-starter-websocket" }
 
-# Spring Cloud starters
+# Spring Cloud starters - versions managed by spring-cloud BOM
 spring-cloud-starter-bus-amqp = { module = "org.springframework.cloud:spring-cloud-starter-bus-amqp" }
 spring-cloud-starter-netflix-eureka-client = { module = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client" }
 spring-cloud-starter-netflix-eureka-server = { module = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server" }
 spring-cloud-starter-gateway = { module = "org.springframework.cloud:spring-cloud-starter-gateway" }
 spring-cloud-starter-openfeign = { module = "org.springframework.cloud:spring-cloud-starter-openfeign" }
-spring-cloud-starter-sleuth = { module = "org.springframework.cloud:spring-cloud-starter-sleuth" }
 spring-cloud-starter-task = { module = "org.springframework.cloud:spring-cloud-starter-task" }
 spring-cloud-starter-consul-discovery = { module = "org.springframework.cloud:spring-cloud-starter-consul-discovery" }
 spring-cloud-starter-zookeeper-discovery = { module = "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery" }
-spring-cloud-starter-netflix-hystrix = { module = "org.springframework.cloud:spring-cloud-starter-netflix-hystrix" }
-spring-cloud-starter-netflix-ribbon = { module = "org.springframework.cloud:spring-cloud-starter-netflix-ribbon" }
 spring-cloud-starter-circuitbreaker-resilience4j = { module = "org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j" }
 spring-cloud-starter-loadbalancer = { module = "org.springframework.cloud:spring-cloud-starter-loadbalancer" }
-
-# Spring Cloud Sleuth
-spring-cloud-sleuth-zipkin = { module = "org.springframework.cloud:spring-cloud-sleuth-zipkin" }
 
 # Spring Cloud Config
 spring-cloud-config-server = { module = "org.springframework.cloud:spring-cloud-config-server" }
@@ -174,11 +168,11 @@ spring-authorization-server = { module = "org.springframework.security:spring-au
 # Spring Integration
 spring-integration-core = { module = "org.springframework.integration:spring-integration-core" }
 
-# Spring Batch Extensions
-spring-batch-extensions = { module = "org.springframework.batch:spring-batch-core" }
+# Micrometer Tracing (managed by Spring Boot BOM)
+micrometer-tracing-bridge-brave = { module = "io.micrometer:micrometer-tracing-bridge-brave" }
 
-# Spring Integration Flow
-spring-integration-flow = { module = "org.springframework.integration:spring-integration-core" }
+# Zipkin Reporter (managed by Spring Boot BOM)
+zipkin-reporter-brave = { module = "io.zipkin.reporter2:zipkin-reporter-brave" }
 
 # Databases
 h2 = { module = "com.h2database:h2" }
@@ -188,12 +182,12 @@ r2dbc-h2 = { module = "io.r2dbc:r2dbc-h2" }
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine" }
 
 # Security Extensions
-spring-security-kerberos = { module = "org.springframework.security:spring-security-kerberos" }
+spring-security-kerberos = { module = "org.springframework.security.kerberos:spring-security-kerberos-client" }
 spring-session-data-geode = { module = "org.springframework.session:spring-session-data-geode" }
 spring-session-data-redis = { module = "org.springframework.session:spring-session-data-redis" }
 spring-credhub = { module = "org.springframework.credhub:spring-credhub" }
 
-# Spring Integration
+# Spring Cloud Stream & Messaging
 spring-cloud-stream = { module = "org.springframework.cloud:spring-cloud-stream" }
 spring-cloud-stream-binder-rabbit = { module = "org.springframework.cloud:spring-cloud-stream-binder-rabbit" }
 spring-kafka = { module = "org.springframework.kafka:spring-kafka" }
@@ -202,12 +196,11 @@ spring-kafka-test = { module = "org.springframework.kafka:spring-kafka-test" }
 # Spring Web
 spring-ws-core = { module = "org.springframework.ws:spring-ws-core" }
 spring-webflow = { module = "org.springframework.webflow:spring-webflow" }
-spring-grpc = { module = "org.springframework:spring-grpc" }
+spring-grpc = { module = "org.springframework.grpc:spring-grpc" }
 
 # Spring Data
 spring-data-keyvalue = { module = "org.springframework.data:spring-data-keyvalue" }
-spring-data-dev-tools = { module = "org.springframework.data:spring-data-dev-tools" }
-spring-data-bom = { module = "org.springframework.data:spring-data-bom" }
+spring-data-dev-tools = { module = "org.springframework.data:spring-data-devtools" }
 hibernate-envers = { module = "org.hibernate.orm:hibernate-envers" }
 
 # Spring AI
@@ -223,19 +216,16 @@ spring-retry = { module = "org.springframework.retry:spring-retry" }
 spring-shell-starter = { module = "org.springframework.shell:spring-shell-starter" }
 
 # Spring Plugin
-spring-plugin = { module = "org.springframework.plugin:spring-plugin" }
+spring-plugin = { module = "org.springframework.plugin:spring-plugin-core" }
 
 # Spring Guice
-spring-guice = { module = "org.springframework:spring-guice" }
+spring-guice = { module = "org.springframework.guice:spring-guice" }
 
 # Spring AOT
 spring-aot = { module = "org.springframework.experimental:spring-aot" }
 
 # Spring Loaded
 spring-loaded = { module = "org.springframework:spring-loaded" }
-
-# Spring Rewrite
-spring-rewrite = { module = "org.springframework.experimental:spring-rewrite" }
 
 # Testing
 testcontainers = { module = "org.testcontainers:testcontainers" }

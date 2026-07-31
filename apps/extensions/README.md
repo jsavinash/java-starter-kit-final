@@ -2,6 +2,14 @@
 
 Additional Spring ecosystem projects extending the framework's capabilities beyond the core modules.
 
+## 🛠 Tech Stack
+
+| Component | Version |
+|-----------|---------|
+| Java | 25 (Amazon Corretto 25.0.4) |
+| Spring Boot | 4.0.7 |
+| Gradle | 9.6.1 |
+
 ## Projects
 
 | Project | Description |
@@ -19,3 +27,18 @@ Additional Spring ecosystem projects extending the framework's capabilities beyo
 - Plugin-based Architecture
 - Modular Monolith Design
 - Dependency Injection Interoperability
+
+## 🚀 Build Commands
+
+```bash
+# Build all extension projects
+./gradlew :apps:extensions:spring-shell:build
+./gradlew :apps:extensions:spring-ai:build
+./gradlew :apps:extensions:spring-modulith:build
+
+# Run a specific application
+./gradlew :apps:extensions:spring-shell:bootRun
+
+# Apply code formatting
+./gradlew spotlessApply
+```

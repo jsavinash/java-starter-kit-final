@@ -12,6 +12,7 @@ import org.gradle.jvm.tasks.Jar
  * Configures a Spring Boot executable application module with:
  * - Spring Boot plugin and dependency management
  * - Spring Boot platform BOM from the composite build
+ * - Spring Cloud BOM for Spring Cloud dependency management
  * - BootJar packaging configuration
  * - Application main class setup
  * - Devtools support
@@ -64,7 +65,13 @@ class SpringBootApplicationConventionPlugin : Plugin<Project> {
 
         val deps = dependencies
 
+        // Import the Spring Boot platform BOM from the composite build
         deps.add("implementation", deps.platform("com.javastarterkit:spring-boot:1.0.0-SNAPSHOT"))
+
+        // Import the Spring Cloud BOM as a platform dependency
+        // This makes Spring Cloud managed versions available to all modules
+        val springCloudVersion = libs.findVersion("spring-cloud").get().displayName
+        deps.add("implementation", deps.platform("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"))
 
         // Spring Boot starters — versions managed by the platform BOM
         deps.add("implementation", libs.findLibrary("spring-boot-starter").get())

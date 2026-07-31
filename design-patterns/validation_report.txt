@@ -1,0 +1,168 @@
+DESIGN PATTERNS VALIDATION REPORT
+==================================================
+
+Total Java files: 258
+Valid examples: 205
+Invalid/Placeholder examples: 53
+
+PATTERNS NEEDING VALID IMPLEMENTATIONS:
+--------------------------------------------------
+[theory] theory/cap-theorem
+  Path: design-patterns/system-design-theory/cap-theorem/src/main/java/com/javastarterkit/patterns/theory/captheorem/CapTheoremExample.java
+
+[theory] theory/database-federation
+  Path: design-patterns/system-design-theory/database-federation/src/main/java/com/javastarterkit/patterns/theory/databasefederation/DatabaseFederationExample.java
+
+[theory] theory/cqrs
+  Path: design-patterns/system-design-theory/cqrs/src/main/java/com/javastarterkit/patterns/theory/cqrs/CqrsExample.java
+
+[theory] theory/vms-containers
+  Path: design-patterns/system-design-theory/vms-containers/src/main/java/com/javastarterkit/patterns/theory/vmscontainers/VmsContainersExample.java
+
+[theory] theory/load-balancing
+  Path: design-patterns/system-design-theory/load-balancing/src/main/java/com/javastarterkit/patterns/theory/loadbalancing/LoadBalancingExample.java
+
+[theory] theory/osi-model
+  Path: design-patterns/system-design-theory/osi-model/src/main/java/com/javastarterkit/patterns/theory/osimodel/OsiModelExample.java
+
+[theory] theory/n-tier-architecture
+  Path: design-patterns/system-design-theory/n-tier-architecture/src/main/java/com/javastarterkit/patterns/theory/ntierarchitecture/NTierArchitectureExample.java
+
+[theory] theory/database-replication
+  Path: design-patterns/system-design-theory/database-replication/src/main/java/com/javastarterkit/patterns/theory/databasereplication/DatabaseReplicationExample.java
+
+[theory] theory/proxy
+  Path: design-patterns/system-design-theory/proxy/src/main/java/com/javastarterkit/patterns/theory/proxy/ProxyExample.java
+
+[theory] theory/monoliths-microservices
+  Path: design-patterns/system-design-theory/monoliths-microservices/src/main/java/com/javastarterkit/patterns/theory/monolithsmicroservices/MonolithsMicroservicesExample.java
+
+[theory] theory/tcp-udp
+  Path: design-patterns/system-design-theory/tcp-udp/src/main/java/com/javastarterkit/patterns/theory/tcpudp/TcpUdpExample.java
+
+[theory] theory/api-gateway
+  Path: design-patterns/system-design-theory/api-gateway/src/main/java/com/javastarterkit/patterns/theory/apigateway/ApiGatewayExample.java
+
+[theory] theory/enterprise-service-bus
+  Path: design-patterns/system-design-theory/enterprise-service-bus/src/main/java/com/javastarterkit/patterns/theory/enterpriseservicebus/EnterpriseServiceBusExample.java
+
+[theory] theory/circuit-breaker
+  Path: design-patterns/system-design-theory/circuit-breaker/src/main/java/com/javastarterkit/patterns/theory/circuitbreaker/CircuitBreakerExample.java
+
+[theory] theory/message-brokers
+  Path: design-patterns/system-design-theory/message-brokers/src/main/java/com/javastarterkit/patterns/theory/messagebrokers/MessageBrokersExample.java
+
+[theory] theory/sql-vs-nosql
+  Path: design-patterns/system-design-theory/sql-vs-nosql/src/main/java/com/javastarterkit/patterns/theory/sqlvsnosql/SqlVsNosqlExample.java
+
+[theory] theory/clustering
+  Path: design-patterns/system-design-theory/clustering/src/main/java/com/javastarterkit/patterns/theory/clustering/ClusteringExample.java
+
+[theory] theory/normalization-denormalization
+  Path: design-patterns/system-design-theory/normalization-denormalization/src/main/java/com/javastarterkit/patterns/theory/normalizationdenormalization/NormalizationDenormalizationExample.java
+
+[theory] theory/consistency-patterns
+  Path: design-patterns/system-design-theory/consistency-patterns/src/main/java/com/javastarterkit/patterns/theory/consistencypatterns/ConsistencyPatternsExample.java
+
+[theory] theory/sql-databases
+  Path: design-patterns/system-design-theory/sql-databases/src/main/java/com/javastarterkit/patterns/theory/sqldatabases/SqlDatabasesExample.java
+
+[theory] theory/consistent-hashing
+  Path: design-patterns/system-design-theory/consistent-hashing/src/main/java/com/javastarterkit/patterns/theory/consistenthashing/ConsistentHashingExample.java
+
+[theory] theory/oauth2-oidc
+  Path: design-patterns/system-design-theory/oauth2-oidc/src/main/java/com/javastarterkit/patterns/theory/oauth2oidc/Oauth2OidcExample.java
+
+[theory] theory/sharding
+  Path: design-patterns/system-design-theory/sharding/src/main/java/com/javastarterkit/patterns/theory/sharding/ShardingExample.java
+
+[theory] theory/distributed-transactions
+  Path: design-patterns/system-design-theory/distributed-transactions/src/main/java/com/javastarterkit/patterns/theory/distributedtransactions/DistributedTransactionsExample.java
+
+[theory] theory/rest-graphql-grpc
+  Path: design-patterns/system-design-theory/rest-graphql-grpc/src/main/java/com/javastarterkit/patterns/theory/restgraphqlgrpc/RestGraphqlGrpcExample.java
+
+[theory] theory/disaster-recovery
+  Path: design-patterns/system-design-theory/disaster-recovery/src/main/java/com/javastarterkit/patterns/theory/disasterrecovery/DisasterRecoveryExample.java
+
+[theory] theory/databases-dbms
+  Path: design-patterns/system-design-theory/databases-dbms/src/main/java/com/javastarterkit/patterns/theory/databasesdbms/DatabasesDbmsExample.java
+
+[theory] theory/storage
+  Path: design-patterns/system-design-theory/storage/src/main/java/com/javastarterkit/patterns/theory/storage/StorageExample.java
+
+[theory] theory/event-driven-architecture
+  Path: design-patterns/system-design-theory/event-driven-architecture/src/main/java/com/javastarterkit/patterns/theory/eventdrivenarchitecture/EventDrivenArchitectureExample.java
+
+[theory] theory/message-queues
+  Path: design-patterns/system-design-theory/message-queues/src/main/java/com/javastarterkit/patterns/theory/messagequeues/MessageQueuesExample.java
+
+[theory] theory/sla-slo-sli
+  Path: design-patterns/system-design-theory/sla-slo-sli/src/main/java/com/javastarterkit/patterns/theory/slaslosli/SlaSloSliExample.java
+
+[theory] theory/transactions
+  Path: design-patterns/system-design-theory/transactions/src/main/java/com/javastarterkit/patterns/theory/transactions/TransactionsExample.java
+
+[theory] theory/sso
+  Path: design-patterns/system-design-theory/sso/src/main/java/com/javastarterkit/patterns/theory/sso/SsoExample.java
+
+[theory] theory/cdn
+  Path: design-patterns/system-design-theory/cdn/src/main/java/com/javastarterkit/patterns/theory/cdn/CdnExample.java
+
+[theory] theory/scalability
+  Path: design-patterns/system-design-theory/scalability/src/main/java/com/javastarterkit/patterns/theory/scalability/ScalabilityExample.java
+
+[theory] theory/availability-consistency
+  Path: design-patterns/system-design-theory/availability-consistency/src/main/java/com/javastarterkit/patterns/theory/availabilityconsistency/AvailabilityConsistencyExample.java
+
+[theory] theory/long-polling-websockets-sse
+  Path: design-patterns/system-design-theory/long-polling-websockets-sse/src/main/java/com/javastarterkit/patterns/theory/longpollingwebsocketssse/LongPollingWebsocketsSseExample.java
+
+[theory] theory/availability
+  Path: design-patterns/system-design-theory/availability/src/main/java/com/javastarterkit/patterns/theory/availability/AvailabilityExample.java
+
+[theory] theory/acid-base
+  Path: design-patterns/system-design-theory/acid-base/src/main/java/com/javastarterkit/patterns/theory/acidbase/AcidBaseExample.java
+
+[theory] theory/service-discovery
+  Path: design-patterns/system-design-theory/service-discovery/src/main/java/com/javastarterkit/patterns/theory/servicediscovery/ServiceDiscoveryExample.java
+
+[theory] theory/event-sourcing
+  Path: design-patterns/system-design-theory/event-sourcing/src/main/java/com/javastarterkit/patterns/theory/eventsourcing/EventSourcingExample.java
+
+[theory] theory/pacelc-theorem
+  Path: design-patterns/system-design-theory/pacelc-theorem/src/main/java/com/javastarterkit/patterns/theory/pacelctheorem/PacelcTheoremExample.java
+
+[theory] theory/performance-throughput
+  Path: design-patterns/system-design-theory/performance-throughput/src/main/java/com/javastarterkit/patterns/theory/performancethroughput/PerformanceThroughputExample.java
+
+[theory] theory/ssl-tls-mtls
+  Path: design-patterns/system-design-theory/ssl-tls-mtls/src/main/java/com/javastarterkit/patterns/theory/ssltlsmtls/SslTlsMtlsExample.java
+
+[theory] theory/nosql-databases
+  Path: design-patterns/system-design-theory/nosql-databases/src/main/java/com/javastarterkit/patterns/theory/nosqldatabases/NosqlDatabasesExample.java
+
+[theory] theory/caching
+  Path: design-patterns/system-design-theory/caching/src/main/java/com/javastarterkit/patterns/theory/caching/CachingExample.java
+
+[theory] theory/ip
+  Path: design-patterns/system-design-theory/ip/src/main/java/com/javastarterkit/patterns/theory/ip/IPAddressExample.java
+
+[theory] theory/ip
+  Path: design-patterns/system-design-theory/ip/src/main/java/com/javastarterkit/patterns/theory/ip/IpExample.java
+
+[theory] theory/dns
+  Path: design-patterns/system-design-theory/dns/src/main/java/com/javastarterkit/patterns/theory/dns/DnsExample.java
+
+[theory] theory/rate-limiting
+  Path: design-patterns/system-design-theory/rate-limiting/src/main/java/com/javastarterkit/patterns/theory/ratelimiting/RateLimitingExample.java
+
+[theory] theory/geohashing-quadtrees
+  Path: design-patterns/system-design-theory/geohashing-quadtrees/src/main/java/com/javastarterkit/patterns/theory/geohashingquadtrees/GeohashingQuadtreesExample.java
+
+[theory] theory/publish-subscribe
+  Path: design-patterns/system-design-theory/publish-subscribe/src/main/java/com/javastarterkit/patterns/theory/publishsubscribe/PublishSubscribeExample.java
+
+[theory] theory/indexes
+  Path: design-patterns/system-design-theory/indexes/src/main/java/com/javastarterkit/patterns/theory/indexes/IndexesExample.java
+

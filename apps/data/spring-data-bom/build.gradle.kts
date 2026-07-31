@@ -14,15 +14,9 @@ plugins {
 
 val libs = the<VersionCatalogsExtension>().named("libs")
 
-group = "com.javastarterkit"
-version = "1.0.0-SNAPSHOT"
-
 description = "Spring Data BOM Example"
 
 dependencies {
-    // Import Spring Data BOM for consistent versions
-    implementation(platform(libs.findLibrary("spring-data-bom").get()))
-
     // Web starter
     implementation(libs.findLibrary("spring-boot-starter-web").get())
 

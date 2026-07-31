@@ -13,9 +13,6 @@ plugins {
 
 val libs = the<VersionCatalogsExtension>().named("libs")
 
-group = "com.javastarterkit"
-version = "1.0.0-SNAPSHOT"
-
 description = "Example Spring Boot Web Application"
 
 dependencies {

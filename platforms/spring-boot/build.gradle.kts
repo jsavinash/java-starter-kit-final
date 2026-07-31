@@ -25,14 +25,8 @@ dependencies {
     // This pins all Spring Boot managed dependencies
     api(platform(springBootBom(libs)))
 
-    // Note: Spring Cloud BOM is not included in the platform BOM
-    // Spring Cloud dependency versions are managed individually in libs.versions.toml
-
     // Pin additional Spring ecosystem dependencies not covered by Spring Boot BOM
     constraints {
-        // Spring Cloud (if needed in future)
-        // api("org.springframework.cloud:spring-cloud-dependencies:${libs.findVersion("spring-cloud").get().displayName}")
-
         // Example: pin a specific version of a library used alongside Spring Boot
         api(libs.findLibrary("jackson-core").get())
         api(libs.findLibrary("jackson-databind").get())

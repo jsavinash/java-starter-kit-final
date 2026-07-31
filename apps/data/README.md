@@ -2,6 +2,16 @@
 
 Spring Data ecosystem projects for database access across SQL and NoSQL databases.
 
+## 🛠 Tech Stack
+
+| Component | Version |
+|-----------|---------|
+| Java | 25 (Amazon Corretto 25.0.4) |
+| Spring Boot | 4.0.7 |
+| Spring Data | Managed by Spring Boot BOM |
+| Gradle | 9.6.1 |
+| Flyway | 11.6.0 (database migrations) |
+
 ## Projects
 
 | Project | Description |
@@ -36,3 +46,20 @@ Spring Data ecosystem projects for database access across SQL and NoSQL database
 - REST Data Exporters
 - Repository Abstractions
 - Cache Management
+
+## 🚀 Build Commands
+
+```bash
+# Build all data projects
+./gradlew :apps:data:spring-data-jpa:build
+./gradlew :apps:data:spring-data-mongodb:build
+./gradlew :apps:data:spring-data-redis:build
+
+# Run a specific application
+./gradlew :apps:data:spring-data-jpa:bootRun
+
+# Apply code formatting
+./gradlew spotlessApply
+```
+
+> **Note:** Some projects require external databases (MongoDB, Redis, Cassandra, etc.) to run fully. JPA and JDBC projects use embedded H2 for development.

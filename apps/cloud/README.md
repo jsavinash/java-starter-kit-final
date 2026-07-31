@@ -2,6 +2,15 @@
 
 Spring Cloud ecosystem projects for building cloud-native microservices with service discovery, configuration management, gateways, and resilience patterns.
 
+## 🛠 Tech Stack
+
+| Component | Version |
+|-----------|---------|
+| Java | 25 (Amazon Corretto 25.0.4) |
+| Spring Boot | 4.0.7 |
+| Spring Cloud | Managed via `libs.versions.toml` |
+| Gradle | 9.6.1 |
+
 ## Projects
 
 | Project | Description |
@@ -29,3 +38,21 @@ Spring Cloud ecosystem projects for building cloud-native microservices with ser
 - Declarative HTTP Clients
 - Event Bus / Message Bus
 - Short-lived Task Execution
+
+## 🚀 Build Commands
+
+```bash
+# Build all cloud projects
+./gradlew :apps:cloud:spring-cloud-gateway:build
+./gradlew :apps:cloud:spring-cloud-config:build
+./gradlew :apps:cloud:spring-cloud-openfeign:build
+./gradlew :apps:cloud:spring-cloud-netflix-eureka:build
+
+# Run a specific application
+./gradlew :apps:cloud:spring-cloud-config:bootRun
+
+# Apply code formatting
+./gradlew spotlessApply
+```
+
+> **Note:** Some Spring Cloud Netflix components (Hystrix, Ribbon) are in maintenance mode. Prefer Spring Cloud LoadBalancer and Resilience4j for new projects.

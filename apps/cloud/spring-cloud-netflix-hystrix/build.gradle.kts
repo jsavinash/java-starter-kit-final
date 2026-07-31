@@ -1,11 +1,14 @@
 // ============================================================================
 // Spring Cloud Netflix Hystrix — Example Application
 // ============================================================================
-// Demonstrates Spring Cloud Netflix Hystrix concepts:
-// - Circuit breaker pattern
+// Demonstrates circuit breaker concepts:
+// - Circuit breaker pattern (modern replacement for Hystrix)
 // - Fault tolerance and resilience
 // - Fallback methods
 // - Service degradation
+// ============================================================================
+// Note: Hystrix is end-of-life. This module now uses Spring Cloud Circuit
+// Breaker with Resilience4j as the modern replacement.
 // ============================================================================
 
 plugins {
@@ -14,17 +17,14 @@ plugins {
 
 val libs = the<VersionCatalogsExtension>().named("libs")
 
-group = "com.javastarterkit"
-version = "1.0.0-SNAPSHOT"
-
-description = "Spring Cloud Netflix Hystrix Example"
+description = "Spring Cloud Circuit Breaker Example (formerly Hystrix)"
 
 dependencies {
     // Web starter
     implementation(libs.findLibrary("spring-boot-starter-web").get())
 
-    // Spring Cloud Netflix Hystrix
-    implementation(libs.findLibrary("spring-cloud-starter-netflix-hystrix").get())
+    // Spring Cloud Circuit Breaker with Resilience4j (modern Hystrix replacement)
+    implementation(libs.findLibrary("spring-cloud-starter-circuitbreaker-resilience4j").get())
 
     // Test starter
     testImplementation(libs.findLibrary("spring-boot-starter-test").get())

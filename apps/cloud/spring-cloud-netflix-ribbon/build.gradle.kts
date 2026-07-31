@@ -1,11 +1,13 @@
 // ============================================================================
 // Spring Cloud Netflix Ribbon — Example Application
 // ============================================================================
-// Demonstrates Spring Cloud Netflix Ribbon concepts:
-// - Client-side load balancing
+// Demonstrates client-side load balancing concepts:
+// - Client-side load balancing (modern replacement for Ribbon)
 // - Service instance selection
-// - Retry and failover
-// - Integration with Feign
+// - Health-check based routing
+// ============================================================================
+// Note: Ribbon is end-of-life. This module now uses Spring Cloud LoadBalancer
+// as the modern replacement.
 // ============================================================================
 
 plugins {
@@ -14,14 +16,14 @@ plugins {
 
 val libs = the<VersionCatalogsExtension>().named("libs")
 
-group = "com.javastarterkit"
-version = "1.0.0-SNAPSHOT"
-
-description = "Spring Cloud Netflix Ribbon Example"
+description = "Spring Cloud LoadBalancer Example (formerly Ribbon)"
 
 dependencies {
-    // Spring Cloud OpenFeign (includes Ribbon)
-    implementation(libs.findLibrary("spring-cloud-starter-openfeign").get())
+    // Web starter
+    implementation(libs.findLibrary("spring-boot-starter-web").get())
+
+    // Spring Cloud LoadBalancer (modern Ribbon replacement)
+    implementation(libs.findLibrary("spring-cloud-starter-loadbalancer").get())
 
     // Test starter
     testImplementation(libs.findLibrary("spring-boot-starter-test").get())

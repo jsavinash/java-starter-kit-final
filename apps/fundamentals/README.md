@@ -2,6 +2,16 @@
 
 Core Spring Boot concepts including IoC containers, REST APIs, auto-configuration, monitoring, and development tools.
 
+## 🛠 Tech Stack
+
+| Component | Version |
+|-----------|---------|
+| Java | 25 (Amazon Corretto 25.0.4) |
+| Spring Boot | 4.0.7 |
+| Gradle | 9.6.1 |
+| Thymeleaf | Managed by Spring Boot BOM |
+| H2 Database | Managed by Spring Boot BOM |
+
 ## Projects
 
 | Project | Description |
@@ -27,3 +37,19 @@ Core Spring Boot concepts including IoC containers, REST APIs, auto-configuratio
 - Developer Tools & LiveReload
 - AOT Compilation & Native Images
 - Thymeleaf Templating
+
+## 🚀 Build Commands
+
+```bash
+# Build all fundamentals projects
+./gradlew :apps:fundamentals:webapp:build
+./gradlew :apps:fundamentals:spring-boot-rest:build
+./gradlew :apps:fundamentals:spring-petclinic:build
+
+# Run a specific application
+./gradlew :apps:fundamentals:webapp:bootRun
+./gradlew :apps:fundamentals:spring-petclinic:bootRun
+
+# Apply code formatting
+./gradlew spotlessApply
+```

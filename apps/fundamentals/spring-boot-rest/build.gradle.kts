@@ -16,9 +16,6 @@ plugins {
 
 val libs = the<VersionCatalogsExtension>().named("libs")
 
-group = "com.javastarterkit"
-version = "1.0.0-SNAPSHOT"
-
 description = "Spring Boot REST APIs Example"
 
 dependencies {

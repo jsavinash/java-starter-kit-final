@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: spring-feature-flags
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+app:
+  feature-flags:
+    enabled: true
+    defaults:
+      new-ui:
+        enabled: true
+        strategy: GLOBAL
+        rollout-percentage: 100
+        description: "Enable the redesigned user interface"
+      beta-dashboard:
+        enabled: false
+        strategy: PERCENTAGE
+        rollout-percentage: 25
+        description: "Beta dashboard for early access users"
+      experimental-search:
+        enabled: false
+        strategy: GLOBAL
+        rollout-percentage: 100
+        description: "Experimental search algorithm"
