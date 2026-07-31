@@ -36,7 +36,6 @@ out/
 
 # NetBeans
 nbproject/private/
-build/
 nbbuild/
 dist/
 nbdist/
@@ -101,6 +100,10 @@ docker-compose.override.yml
 # Kubernetes
 .secrets/
 
+# Java heap dumps and profiler files
+*.hprof
+*.jfr
+
 # Miscellaneous
 *.class
 *.jar
@@ -109,5 +112,4 @@ docker-compose.override.yml
 *.pid
 *.seed
 *.pid.lock
-.vscode/
 .attach_pid*
