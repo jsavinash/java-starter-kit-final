@@ -21,15 +21,22 @@ allprojects {
 subprojects {
     apply(plugin = "java")
 
+    // Access the version catalog programmatically — the `libs` accessor is
+    // not always generated for the root build script of an included build.
+    // VersionCatalogsExtension is registered on the root project, not subprojects.
+    val libs = rootProject.extensions
+        .getByType<org.gradle.api.artifacts.VersionCatalogsExtension>()
+        .named("libs")
+
     java {
         sourceCompatibility = JavaVersion.VERSION_25
         targetCompatibility = JavaVersion.VERSION_25
     }
 
     dependencies {
-        testImplementation(platform("org.junit:junit-bom:5.11.4"))
-        testImplementation("org.junit.jupiter:junit-jupiter")
-        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+        testImplementation(platform(libs.findLibrary("junit.bom").get()))
+        testImplementation(libs.findLibrary("junit.jupiter").get())
+        testRuntimeOnly(libs.findLibrary("junit.platform.launcher").get())
     }
 
     tasks.withType<JavaCompile> {

@@ -6,13 +6,13 @@ Composable Architecture structures an application around small, independent **co
 
 The core building blocks (inspired by Point-Free's "The Composable Architecture") are:
 
-- **State** — a record describing the data a feature owns
+- **State** — an immutable record describing the data a feature owns
 - **Action** — a sealed interface of all possible user/system events
 - **Reducer** — a pure function `(State, Action) -> State`
-- **Store** — holds the current state and dispatches actions through the reducer
+- **Store** — a thread-safe holder of the current state that dispatches actions through the reducer
 - **Component** — bundles a state slice, action subset, and reducer so it can be composed
 
-This example models a simple **counter** and a **text-input** feature, then composes them into a single **form** feature to demonstrate how independent components are combined without coupling.
+This example models a **pizza-configuration** feature and a **delivery-details** feature, then composes them into a single **order** feature to demonstrate how independent components are combined without coupling.
 
 ## Structure
 
@@ -20,40 +20,83 @@ This example models a simple **counter** and a **text-input** feature, then comp
 composable-architecture/
 ├── build.gradle.kts
 ├── README.md
+├── LLD.md
 └── src/
     ├── main/java/com/javastarterkit/patterns/composablearchitecture/
-    │   └── ComposableArchitecture.java
+    │   ├── Main.java                                  # Application entry point
+    │   ├── core/
+    │   │   ├── State.java                             # Marker interface
+    │   │   ├── Action.java                            # Marker interface
+    │   │   ├── Reducer.java                           # Pure function + combine/pullback
+    │   │   ├── component/Component.java               # Feature bundle (state+reducer)
+    │   │   └── store/Store.java                       # Thread-safe runtime engine
+    │   ├── exception/
+    │   │   ├── ComposableArchitectureException.java   # Base runtime exception
+    │   │   ├── InvalidPizzaException.java             # Pizza validation error
+    │   │   └── InvalidDeliveryException.java          # Delivery validation error
+    │   ├── ui/
+    │   │   ├── models/
+    │   │   │   ├── PizzaSize.java                     # Enum of pizza sizes
+    │   │   │   ├── Topping.java                       # Enum of toppings
+    │   │   │   ├── PizzaState.java                    # Immutable pizza state
+    │   │   │   ├── DeliveryState.java                 # Immutable delivery state
+    │   │   │   └── OrderState.java                    # Composed root state
+    │   │   ├── actions/
+    │   │   │   ├── PizzaAction.java                   # Sealed pizza actions
+    │   │   │   ├── DeliveryAction.java                # Sealed delivery actions
+    │   │   │   └── OrderAction.java                   # Sealed parent action wrapper
+    │   │   └── reducers/
+    │   │       ├── PizzaReducer.java                  # Pizza feature reducer (enum)
+    │   │       ├── DeliveryReducer.java               # Delivery feature reducer (enum)
+    │   │       └── OrderReducer.java                  # Composed parent reducer
+    │   └── composition/
+    │       └── OrderComposer.java                     # Store factory / wiring
     └── test/java/com/javastarterkit/patterns/composablearchitecture/
-        └── ComposableArchitectureTest.java
+        ├── PizzaReducerTest.java
+        ├── DeliveryReducerTest.java
+        ├── OrderCompositionTest.java
+        └── StoreConcurrencyTest.java
 ```
 
 ## Implementation
 
-The example is a single self-contained Java file with inner static classes/interfaces organized into core abstractions and feature components:
-
 ### Core Abstractions
+
 | Component | Responsibility |
 |-----------|---------------|
-| `State` | Marker interface for state records |
-| `Action` | Marker interface for action sealed interfaces |
+| `State` | Marker interface for immutable state records |
+| `Action` | Marker interface for sealed action hierarchies |
 | `Reducer<S, A>` | Pure function `(State, Action) -> State`; provides `combine` and `pullback` composition operators |
-| `Store<S, A>` | Holds current state; dispatches actions through the reducer |
-| `Component<S, A>` | Bundles initial-state factory + reducer for composition |
+| `Store<S, A>` | Thread-safe holder of current state; dispatches actions through the reducer and notifies subscribers |
+| `Component<S, A>` | Bundles initial-state factory + state type + reducer for composition |
 
 ### Feature Components
+
 | Feature | State | Actions | Reducer |
 |---------|-------|---------|---------|
-| Counter | `CounterState(count)` | `increment`, `decrement` | `CounterReducer` |
-| Text | `TextState(value)` | `change(text)`, `clear` | `TextReducer` |
-| Form (composed) | `FormState(counter, text)` | `Counter(action)`, `Text(action)` | Combined via `pullback` + `combine` |
+| Pizza | `PizzaState(size, toppings, quantity)` | `selectSize`, `toggleTopping`, `setQuantity` | `PizzaReducer` (enum) |
+| Delivery | `DeliveryState(name, address, city, phone)` | `setName`, `setAddress`, `setCity`, `setPhone` | `DeliveryReducer` (enum) |
+| Order (composed) | `OrderState(pizza, delivery)` | `Pizza(action)`, `Delivery(action)` | `OrderReducer.composed()` via `pullback` + `combine` |
 
 ### Composition Operators
+
 - **`Reducer.combine(first, second)`** — chains two reducers over the same state/action space; the second sees the state produced by the first.
 - **`Reducer.pullback(component, extract, inject, mapAction)`** — adapts a child reducer to a parent state/action space: extracts the child state slice, runs the child reducer, and injects the result back. This is the key operator that lets independent features be combined without coupling.
 
+### Concurrency / Thread-Safety
+
+The `Store` is built for multi-producer, multi-consumer usage:
+
+- **Immutable state** — every state is a value object; no in-place mutation, so any thread can read a snapshot without locks.
+- **`ReentrantLock`** — serializes the read-modify-write cycle of `dispatch`; reentrancy prevents deadlock on nested dispatch.
+- **`CopyOnWriteArrayList`** — subscriber lists are copied on modification, so notification delivery never blocks.
+- **`AtomicLong`** — monotonic revision counter for change-detection and caching.
+- **Enum singletons** — reducers are stateless enums (`INSTANCE`), safe to share across threads and stores.
+
 ### Flow
-1. Build independent feature `Component`s (Counter, Text).
-2. Compose them into a parent `FormState`/`FormAction` reducer using `pullback` and `combine`.
+
+1. Build independent feature `Component`s (Pizza, Delivery).
+2. Compose them into a parent `OrderState`/`OrderAction` reducer using `pullback` and `combine`.
 3. Create a `Store` with the composed reducer and initial state.
 4. Dispatch actions — the store runs the reducer, which routes each action to the appropriate child reducer.
 
@@ -65,25 +108,22 @@ The example is a single self-contained Java file with inner static classes/inter
 
 # Run the tests
 ./gradlew :system-design-pattern:architectural:composable-architecture:test
+
+# Run the Main demonstration
+./gradlew :system-design-pattern:architectural:composable-architecture:run
 ```
 
 ## Sample Output
 
 ```
-=== Composable Architecture Pattern ===
-Build features from small, independent, composable components
-
-Initial state: Form{Counter(count=0), Text(value='')}
-After increment: Form{Counter(count=1), Text(value='')}
-After +1, -1:    Form{Counter(count=1), Text(value='')}
-After text:      Form{Counter(count=1), Text(value='Hello')}
-After clear:     Form{Counter(count=1), Text(value='')}
-
-Benefits:
-- Each feature is isolated, testable, and reusable
-- Features are composed without coupling via pullback/combine
-- State changes are centralized and predictable (single reducer)
-- Easy to reason about: (State, Action) -> State
+=== Composable Architecture Pattern — Pizza Order Demo ===
+Initial state: OrderState[pizza=PizzaState[size=MEDIUM, toppings=[CHEESE], quantity=1], delivery=DeliveryState[name=, address=, city=, phone=]]
+After selectSize(LARGE):  OrderState[pizza=PizzaState[size=LARGE, toppings=[CHEESE], quantity=1], ...]
+After toggleTopping(PEPPERONI): OrderState[pizza=PizzaState[size=LARGE, toppings=[CHEESE, PEPPERONI], quantity=1], ...]
+After setQuantity(2):    OrderState[pizza=PizzaState[size=LARGE, toppings=[CHEESE, PEPPERONI], quantity=2], ...]
+After delivery details:  OrderState[pizza=..., delivery=DeliveryState[name=Alice, address=123 Main St, city=Springfield, phone=555-0100]]
+Final order ready: true
+Total price: $29.0
 ```
 
 ## Benefits
@@ -91,6 +131,7 @@ Benefits:
 - **Isolation** — each feature is independent, testable in isolation, and reusable.
 - **Composition without coupling** — `pullback` and `combine` let features be assembled without knowing about each other.
 - **Predictable state changes** — all mutations flow through a single reducer function `(State, Action) -> State`.
+- **Thread-safety** — immutable states + a reentrant lock make the store safe for concurrent producers/consumers.
 - **Testability** — reducers are pure functions, making them trivial to unit test.
 
 ## Trade-offs
@@ -106,3 +147,7 @@ Architectural
 ## Java Version
 
 Java 25
+
+## See Also
+
+- [LLD.md](LLD.md) — Full low-level design with requirements, build config, Mermaid diagrams, and implementation details.

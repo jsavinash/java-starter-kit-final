@@ -15,6 +15,11 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
     }
+    versionCatalogs {
+        create("libs") {
+            from(files(settingsDir.resolve("../gradle/libs.versions.toml")))
+        }
+    }
 }
 
 rootProject.name = "system-design-patterns"
