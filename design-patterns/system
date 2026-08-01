@@ -1,0 +1,768 @@
+# Command Query Responsibility Segregation (CQRS) Pattern — Production-Grade LLD Blueprint
+
+---
+
+## 1. REQUIREMENTS & SCOPE
+
+### Core Functional Requirements
+
+| # | Requirement | Description |
+|---|-------------|-------------|
+| FR-1 | **Command-side mutation** | The system must accept commands (`OpenAccount`, `DepositMoney`, `WithdrawMoney`, `CloseAccount`) that mutate the write model (aggregate) and emit domain events. Each command enforces business invariants (no negative balances, positive amounts, no operations on closed accounts). |
+| FR-2 | **Query-side reads** | The system must support queries (`FindAccountById`, `ListAllAccounts`, `CountAccounts`, `FindAccountsByOwner`) that read from a denormalized, query-optimized read model — completely decoupled from the write model. |
+| FR-3 | **Event-sourced write model** | The write side must persist domain events (not final state) in an `EventStore`. Aggregates are rebuilt by replaying their event stream, enabling full audit history and read-model rebuilds. |
+| FR-4 | **Read model synchronization** | A projection (`AccountProjection`) must subscribe to domain events via an `EventBus` and update the read model (`AccountReadModel`) so queries reflect the latest command-side state. |
+| FR-5 | **Account lifecycle** | The system must support the full account lifecycle: open → deposit/withdraw → close. Closed accounts are excluded from list and count queries but remain in the event store for audit. |
+
+### Non-Functional Requirements
+
+| # | Requirement | Description |
+|----|-------------|-------------|
+| NFR-1 | **Thread-safety** | All infrastructure components (`EventStore`, `AccountReadModel`, `EventBus`, `CommandBus`, `QueryBus`) must be thread-safe using `ConcurrentHashMap` and `CopyOnWriteArrayList` to support concurrent command dispatch and query execution without external locking. |
+| NFR-2 | **Extensibility** | New commands, queries, events, and projections can be added without modifying existing handlers or buses — following the Open/Closed Principle. The `CommandHandler` and `QueryHandler` interfaces allow plug-and-play registration. |
+| NFR-3 | **Immutability** | All model objects (commands, queries, events, `AccountView`) are immutable Java records — no shared mutable state between the write and read sides. The aggregate is the only mutable object, and it is not shared across threads. |
+
+---
+
+## 2. GRADLE PROJECT BUILD CONFIGURATION
+
+### `build.gradle.kts`
+
+```kotlin
+plugins {
+    java
+}
+
+group = "com.javastarterkit.patterns"
+version = "1.0.0-SNAPSHOT"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.11.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+```
+
+### Toolchain
+
+| Tool | Version |
+|------|---------|
+| Java | 25 (Amazon Corretto) |
+| Gradle | 9.6.1 |
+| JUnit | 5.11.4 (Jupiter BOM) |
+| Build System | Kotlin DSL (`build.gradle.kts`) |
+
+### Build Commands
+
+```bash
+# Build the module
+./gradlew :system-design-pattern:architectural:command-query-responsibility-segregation:build
+
+# Run all tests (including concurrency tests)
+./gradlew :system-design-pattern:architectural:command-query-responsibility-segregation:test
+
+# Run the demonstration
+./gradlew :system-design-pattern:architectural:command-query-responsibility-segregation:run
+```
+
+---
+
+## 3. LLD DIAGRAMS (MERMAID.JS)
+
+### 3.1 Class Diagram
+
+```mermaid
+classDiagram
+    class CommandQueryResponsibilitySegregation {
+        +demonstrate() void
+        +main(String[]) void
+    }
+
+    class DomainException {
+        +DomainException(String message)
+    }
+
+    class AggregateNotFoundException {
+        +AggregateNotFoundException(String message)
+    }
+
+    class HandlerNotFoundException {
+        +HandlerNotFoundException(String message)
+    }
+
+    class DomainEvent {
+        <<interface>>
+        +aggregateId() String
+    }
+
+    class AccountOpened {
+        +String aggregateId
+        +String owner
+        +int initialBalance
+    }
+
+    class MoneyDeposited {
+        +String aggregateId
+        +int amount
+    }
+
+    class MoneyWithdrawn {
+        +String aggregateId
+        +int amount
+    }
+
+    class AccountClosed {
+        +String aggregateId
+    }
+
+    class EventBus {
+        -Map~Class, List~Consumer~~ subscribers
+        +subscribe(Class, Consumer) void
+        +publish(DomainEvent) void
+        +subscriberCount(Class) int
+    }
+
+    class AccountAggregate {
+        -String id
+        -String owner
+        -int balance
+        -boolean closed
+        -List~DomainEvent~ uncommittedEvents
+        +id() String
+        +owner() String
+        +balance() int
+        +isClosed() boolean
+        +open(String, String, int) AccountAggregate
+        +deposit(int) void
+        +withdraw(int) void
+        +close() void
+        +replay(DomainEvent) void
+        +pullUncommittedEvents() List~DomainEvent~
+    }
+
+    class EventStore {
+        -Map~String, List~DomainEvent~~ streams
+        +save(String, List) void
+        +load(String) List~DomainEvent~
+        +exists(String) boolean
+        +aggregateCount() int
+    }
+
+    class AccountRepository {
+        -EventStore store
+        -EventBus eventBus
+        +create(String, int) String
+        +find(String) AccountAggregate
+        +persist(AccountAggregate) void
+    }
+
+    class Command {
+        <<interface>>
+    }
+
+    class OpenAccount {
+        +String owner
+        +int initialBalance
+    }
+
+    class DepositMoney {
+        +String accountId
+        +int amount
+    }
+
+    class WithdrawMoney {
+        +String accountId
+        +int amount
+    }
+
+    class CloseAccount {
+        +String accountId
+    }
+
+    class CommandHandler {
+        <<interface>>
+        +commandType() Class
+        +handle(C) R
+    }
+
+    class OpenAccountHandler {
+        -AccountRepository repository
+        +handle(OpenAccount) String
+    }
+
+    class DepositMoneyHandler {
+        -AccountRepository repository
+        +handle(DepositMoney) Void
+    }
+
+    class WithdrawMoneyHandler {
+        -AccountRepository repository
+        +handle(WithdrawMoney) Void
+    }
+
+    class CloseAccountHandler {
+        -AccountRepository repository
+        +handle(CloseAccount) Void
+    }
+
+    class CommandBus {
+        -Map~Class, CommandHandler~ handlers
+        +register(CommandHandler) void
+        +dispatch(Command) R
+        +handlerCount() int
+    }
+
+    class AccountView {
+        +String id
+        +String owner
+        +int balance
+        +boolean closed
+    }
+
+    class AccountReadModel {
+        -Map~String, AccountView~ views
+        +upsert(AccountView) void
+        +remove(String) void
+        +findById(String) Optional~AccountView~
+        +findAllOpen() List~AccountView~
+        +findAll() List~AccountView~
+        +count() int
+        +findByOwner(String) List~AccountView~
+    }
+
+    class AccountProjection {
+        -AccountReadModel readModel
+        +onAccountOpened(AccountOpened) void
+        +onMoneyDeposited(MoneyDeposited) void
+        +onMoneyWithdrawn(MoneyWithdrawn) void
+        +onAccountClosed(AccountClosed) void
+    }
+
+    class Query {
+        <<interface>>
+    }
+
+    class FindAccountById {
+        +String accountId
+    }
+
+    class ListAllAccounts {
+    }
+
+    class CountAccounts {
+    }
+
+    class FindAccountsByOwner {
+        +String owner
+    }
+
+    class QueryHandler {
+        <<interface>>
+        +queryType() Class
+        +handle(Q) R
+    }
+
+    class FindAccountByIdHandler {
+        -AccountReadModel readModel
+        +handle(FindAccountById) Optional~AccountView~
+    }
+
+    class ListAllAccountsHandler {
+        -AccountReadModel readModel
+        +handle(ListAllAccounts) List~AccountView~
+    }
+
+    class CountAccountsHandler {
+        -AccountReadModel readModel
+        +handle(CountAccounts) Integer
+    }
+
+    class FindAccountsByOwnerHandler {
+        -AccountReadModel readModel
+        +handle(FindAccountsByOwner) List~AccountView~
+    }
+
+    class QueryBus {
+        -Map~Class, QueryHandler~ handlers
+        +register(QueryHandler) void
+        +dispatch(Query) R
+        +handlerCount() int
+    }
+
+    %% Exception inheritance
+    DomainException --|> RuntimeException
+    AggregateNotFoundException --|> RuntimeException
+    HandlerNotFoundException --|> RuntimeException
+
+    %% Event inheritance
+    AccountOpened --|> DomainEvent
+    MoneyDeposited --|> DomainEvent
+    MoneyWithdrawn --|> DomainEvent
+    AccountClosed --|> DomainEvent
+
+    %% Command inheritance
+    OpenAccount --|> Command
+    DepositMoney --|> Command
+    WithdrawMoney --|> Command
+    CloseAccount --|> Command
+
+    %% Query inheritance
+    FindAccountById --|> Query
+    ListAllAccounts --|> Query
+    CountAccounts --|> Query
+    FindAccountsByOwner --|> Query
+
+    %% Command handler relationships
+    OpenAccountHandler ..|> CommandHandler
+    DepositMoneyHandler ..|> CommandHandler
+    WithdrawMoneyHandler ..|> CommandHandler
+    CloseAccountHandler ..|> CommandHandler
+
+    %% Query handler relationships
+    FindAccountByIdHandler ..|> QueryHandler
+    ListAllAccountsHandler ..|> QueryHandler
+    CountAccountsHandler ..|> QueryHandler
+    FindAccountsByOwnerHandler ..|> QueryHandler
+
+    %% Command side associations
+    AccountRepository --> EventStore : uses
+    AccountRepository --> EventBus : publishes to
+    AccountRepository --> AccountAggregate : creates/loads
+
+    OpenAccountHandler --> AccountRepository : depends on
+    DepositMoneyHandler --> AccountRepository : depends on
+    WithdrawMoneyHandler --> AccountRepository : depends on
+    CloseAccountHandler --> AccountRepository : depends on
+
+    CommandBus --> CommandHandler : routes to
+    EventBus --> DomainEvent : publishes
+
+    %% Query side associations
+    AccountProjection --> AccountReadModel : updates
+    AccountProjection --> DomainEvent : consumes
+
+    FindAccountByIdHandler --> AccountReadModel : reads from
+    ListAllAccountsHandler --> AccountReadModel : reads from
+    CountAccountsHandler --> AccountReadModel : reads from
+    FindAccountsByOwnerHandler --> AccountReadModel : reads from
+
+    QueryBus --> QueryHandler : routes to
+
+    %% Read model contains views
+    AccountReadModel --> AccountView : stores
+```
+
+### 3.2 Sequence Diagram — Deposit Money Command (Primary Use Case)
+
+```mermaid
+sequenceDiagram
+    participant Client as Client
+    participant CmdBus as CommandBus
+    participant Handler as DepositMoneyHandler
+    participant Repo as AccountRepository
+    participant Store as EventStore
+    participant Agg as AccountAggregate
+    participant Bus as EventBus
+    participant Proj as AccountProjection
+    participant ReadModel as AccountReadModel
+
+    Client->>CmdBus: dispatch(DepositMoney(accountId, 200))
+    CmdBus->>CmdBus: lookup handler for DepositMoney
+    CmdBus->>Handler: handle(DepositMoney)
+
+    Handler->>Repo: find(accountId)
+    Repo->>Store: load(accountId)
+    Store-->>Repo: [AccountOpened, ...]
+    Repo->>Agg: new AccountAggregate(id)
+    Repo->>Agg: replay(AccountOpened)
+    Repo->>Agg: replay(MoneyDeposited)
+    Repo-->>Handler: AccountAggregate (balance=100)
+
+    Handler->>Agg: deposit(200)
+    Agg->>Agg: apply(MoneyDeposited(id, 200))
+    Agg->>Agg: balance = 300
+    Agg-->>Handler: void
+
+    Handler->>Repo: persist(account)
+    Repo->>Agg: pullUncommittedEvents()
+    Agg-->>Repo: [MoneyDeposited(id, 200)]
+    Repo->>Store: save(id, [MoneyDeposited])
+    Repo->>Bus: publish(MoneyDeposited)
+
+    Bus->>Proj: onMoneyDeposited(MoneyDeposited)
+    Proj->>ReadModel: findById(id)
+    ReadModel-->>Proj: AccountView(balance=100)
+    Proj->>ReadModel: upsert(AccountView(balance=300))
+
+    Repo-->>Handler: void
+    Handler-->>CmdBus: null
+    CmdBus-->>Client: null
+
+    Note over Client,ReadModel: Read model is now synchronized with write model
+```
+
+### 3.3 Sequence Diagram — Query Execution (FindAccountById)
+
+```mermaid
+sequenceDiagram
+    participant Client as Client
+    participant QBus as QueryBus
+    participant Handler as FindAccountByIdHandler
+    participant ReadModel as AccountReadModel
+
+    Client->>QBus: dispatch(FindAccountById(accountId))
+    QBus->>QBus: lookup handler for FindAccountById
+    QBus->>Handler: handle(FindAccountById)
+    Handler->>ReadModel: findById(accountId)
+    ReadModel-->>Handler: Optional[AccountView]
+    Handler-->>QBus: Optional[AccountView]
+    QBus-->>Client: Optional[AccountView]
+```
+
+### 3.4 Component Diagram
+
+```mermaid
+graph TB
+    subgraph "Command Side (Write Model)"
+        CMD_BUS["CommandBus<br/>(ConcurrentHashMap)"]
+        CMD_HANDLERS["Command Handlers<br/>(Open, Deposit, Withdraw, Close)"]
+        REPO["AccountRepository<br/>(loads/saves aggregates)"]
+        AGG["AccountAggregate<br/>(enforces business rules)"]
+        STORE["EventStore<br/>(ConcurrentHashMap)"]
+    end
+
+    subgraph "Synchronization Layer"
+        EVENT_BUS["EventBus<br/>(ConcurrentHashMap + CopyOnWriteArrayList)"]
+        PROJ["AccountProjection<br/>(subscribes to events)"]
+    end
+
+    subgraph "Query Side (Read Model)"
+        QUERY_BUS["QueryBus<br/>(ConcurrentHashMap)"]
+        QUERY_HANDLERS["Query Handlers<br/>(FindById, ListAll, Count, ByOwner)"]
+        READ_MODEL["AccountReadModel<br/>(ConcurrentHashMap)"]
+        VIEW["AccountView<br/>(immutable record)"]
+    end
+
+    subgraph "Domain Events (Immutable Records)"
+        EVENTS["AccountOpened<br/>MoneyDeposited<br/>MoneyWithdrawn<br/>AccountClosed"]
+    end
+
+    CMD_BUS -->|"dispatch()"| CMD_HANDLERS
+    CMD_HANDLERS -->|"find/persist"| REPO
+    REPO -->|"load/save"| STORE
+    REPO -->|"create/replay"| AGG
+    REPO -->|"publish()"| EVENT_BUS
+
+    EVENT_BUS -->|"notify()"| PROJ
+    PROJ -->|"upsert()"| READ_MODEL
+    READ_MODEL --> VIEW
+
+    QUERY_BUS -->|"dispatch()"| QUERY_HANDLERS
+    QUERY_HANDLERS -->|"read()"| READ_MODEL
+
+    AGG -->|"emits"| EVENTS
+    EVENTS -->|"published via"| EVENT_BUS
+```
+
+### 3.5 Architecture Diagram (ASCII)
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                           CQRS Architecture                                   │
+│                                                                              │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │                        COMMAND SIDE (Write Model)                      │   │
+│  │                                                                       │   │
+│  │  ┌──────────────┐    ┌──────────────────┐    ┌──────────────────┐    │   │
+│  │  │  CommandBus   │───>│ Command Handlers  │───>│ AccountRepository│    │   │
+│  │  │ (ConcHashMap) │    │ (Open, Deposit,   │    │ (find/persist)   │    │   │
+│  │  └──────────────┘    │  Withdraw, Close) │    └────────┬─────────┘    │   │
+│  │                       └──────────────────┘             │              │   │
+│  │  ┌─────────────────────────────────────────────────────┼──────┐      │   │
+│  │  │  AccountAggregate (enforces business invariants)    │      │      │   │
+│  │  │  • No negative balances                              │      │      │   │
+│  │  │  • Positive amounts only                             │      │      │   │
+│  │  │  • No operations on closed accounts                  │      │      │   │
+│  │  └─────────────────────────────────────────────────────┘      │      │   │
+│  │                                                               │      │   │
+│  │  ┌──────────────────┐                                        │      │   │
+│  │  │   EventStore      │<───────────────────────────────────────┘      │   │
+│  │  │  (ConcHashMap)    │  stores event streams per aggregate           │   │
+│  │  └──────────────────┘                                               │   │
+│  └───────────────────────────────────────────────────────────────────────┘   │
+│                                      │                                       │
+│                                      │ publish(events)                        │
+│                                      ▼                                       │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │                    SYNCHRONIZATION LAYER                               │   │
+│  │                                                                       │   │
+│  │  ┌──────────────────┐    ┌──────────────────┐    ┌──────────────┐    │   │
+│  │  │    EventBus       │───>│ AccountProjection │───>│  ReadModel   │    │   │
+│  │  │ (ConcHashMap +    │    │ (subscribes to    │    │ (ConcHashMap)│    │   │
+│  │  │  CopyOnWriteList) │    │  domain events)   │    │              │    │   │
+│  │  └──────────────────┘    └──────────────────┘    └──────────────┘    │   │
+│  └───────────────────────────────────────────────────────────────────────┘   │
+│                                                              │               │
+│                                                              │ reads from    │
+│                                                              ▼               │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │                        QUERY SIDE (Read Model)                         │   │
+│  │                                                                       │   │
+│  │  ┌──────────────┐    ┌──────────────────┐    ┌──────────────────┐    │   │
+│  │  │   QueryBus    │───>│ Query Handlers    │───>│ AccountReadModel │    │   │
+│  │  │ (ConcHashMap) │    │ (FindById, List,  │    │ (ConcHashMap)    │    │   │
+│  │  └──────────────┘    │  Count, ByOwner)  │    └──────────────────┘    │   │
+│  │                       └──────────────────┘                            │   │
+│  │  ┌──────────────────────────────────────────────────────────────┐     │   │
+│  │  │  AccountView (immutable record: id, owner, balance, closed)   │     │   │
+│  │  └──────────────────────────────────────────────────────────────┘     │   │
+│  └───────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+│  All events, commands, queries, and views are immutable Java records          │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.6 Thread-Safety Strategy Diagram
+
+```mermaid
+graph LR
+    subgraph "Thread-Safety Layers"
+        L1["Layer 1: Event Store<br/>ConcurrentHashMap<br/>(thread-safe event streams)"]
+        L2["Layer 2: Event Bus<br/>ConcurrentHashMap + CopyOnWriteArrayList<br/>(thread-safe pub/sub)"]
+        L3["Layer 3: Read Model<br/>ConcurrentHashMap<br/>(thread-safe views)"]
+        L4["Layer 4: Command/Query Buses<br/>ConcurrentHashMap<br/>(thread-safe handler routing)"]
+        L5["Layer 5: Model Objects<br/>Immutable Java records<br/>(no shared mutable state)"]
+    end
+
+    L1 --> L2 --> L3 --> L4 --> L5
+
+    style L1 fill:#e1f5fe
+    style L2 fill:#e8f5e9
+    style L3 fill:#fff3e0
+    style L4 fill:#fce4ec
+    style L5 fill:#f3e5f5
+```
+
+### 3.7 Event Sourcing Flow Diagram
+
+```mermaid
+graph LR
+    subgraph "Event Stream for Account"
+        E1["AccountOpened<br/>(id, owner, 100)"]
+        E2["MoneyDeposited<br/>(id, 200)"]
+        E3["MoneyWithdrawn<br/>(id, 50)"]
+        E4["AccountClosed<br/>(id)"]
+    end
+
+    subgraph "Aggregate Rebuild"
+        R1["replay(AccountOpened)<br/>balance = 100"]
+        R2["replay(MoneyDeposited)<br/>balance = 300"]
+        R3["replay(MoneyWithdrawn)<br/>balance = 250"]
+        R4["replay(AccountClosed)<br/>closed = true"]
+    end
+
+    E1 --> R1 --> E2 --> R2 --> E3 --> R3 --> E4 --> R4
+
+    style E1 fill:#e1f5fe
+    style E2 fill:#e1f5fe
+    style E3 fill:#e1f5fe
+    style E4 fill:#e1f5fe
+    style R1 fill:#e8f5e9
+    style R2 fill:#e8f5e9
+    style R3 fill:#e8f5e9
+    style R4 fill:#e8f5e9
+```
+
+---
+
+## 4. SYSTEM IMPLEMENTATION DETAILS & CODE
+
+### 4.1 Package Structure
+
+```
+command-query-responsibility-segregation/
+├── build.gradle.kts
+├── README.md
+└── src/
+    ├── main/java/com/javastarterkit/patterns/commandqueryresponsibilitysegregation/
+    │   └── CommandQueryResponsibilitySegregation.java    ← All components in one file
+    └── test/java/com/javastarterkit/patterns/commandqueryresponsibilitysegregation/
+        └── CommandQueryResponsibilitySegregationTest.java ← 30+ tests (incl. concurrency)
+```
+
+### 4.2 Component Breakdown
+
+#### Exceptions
+| Class | Purpose |
+|-------|---------|
+| `DomainException` | Thrown when a command violates a business invariant (negative balance, closed account) |
+| `AggregateNotFoundException` | Thrown when an aggregate is not found in the event store |
+| `HandlerNotFoundException` | Thrown when no handler is registered for a command or query |
+
+#### Domain Events (Immutable Records)
+| Event | Fields | Purpose |
+|-------|--------|---------|
+| `AccountOpened` | `aggregateId`, `owner`, `initialBalance` | Emitted when a new account is created |
+| `MoneyDeposited` | `aggregateId`, `amount` | Emitted when money is deposited |
+| `MoneyWithdrawn` | `aggregateId`, `amount` | Emitted when money is withdrawn |
+| `AccountClosed` | `aggregateId` | Emitted when an account is closed |
+
+#### Commands (Immutable Records)
+| Command | Fields | Returns | Purpose |
+|---------|--------|---------|---------|
+| `OpenAccount` | `owner`, `initialBalance` | `String` (account id) | Opens a new account |
+| `DepositMoney` | `accountId`, `amount` | `Void` | Deposits money |
+| `WithdrawMoney` | `accountId`, `amount` | `Void` | Withdraws money |
+| `CloseAccount` | `accountId` | `Void` | Closes an account |
+
+#### Queries (Immutable Records)
+| Query | Fields | Returns | Purpose |
+|-------|--------|---------|---------|
+| `FindAccountById` | `accountId` | `Optional<AccountView>` | Finds a single account |
+| `ListAllAccounts` | — | `List<AccountView>` | Lists all open accounts |
+| `CountAccounts` | — | `Integer` | Counts open accounts |
+| `FindAccountsByOwner` | `owner` | `List<AccountView>` | Finds accounts by owner |
+
+#### Command Side (Write Model)
+| Component | Storage | Thread-Safety |
+|-----------|---------|---------------|
+| `AccountAggregate` | In-memory (transient) | Not shared — created per request |
+| `EventStore` | `ConcurrentHashMap<String, List<DomainEvent>>` | `computeIfAbsent`, `getOrDefault` are atomic |
+| `AccountRepository` | Delegates to `EventStore` | Thread-safe via `EventStore` |
+| `CommandBus` | `ConcurrentHashMap<Class<?>, CommandHandler>` | `put`, `get` are atomic |
+
+#### Query Side (Read Model)
+| Component | Storage | Thread-Safety |
+|-----------|---------|---------------|
+| `AccountReadModel` | `ConcurrentHashMap<String, AccountView>` | `put`, `get`, stream operations are atomic |
+| `AccountProjection` | Delegates to `AccountReadModel` | Thread-safe via `AccountReadModel` |
+| `QueryBus` | `ConcurrentHashMap<Class<?>, QueryHandler>` | `put`, `get` are atomic |
+
+#### Synchronization Layer
+| Component | Storage | Thread-Safety |
+|-----------|---------|---------------|
+| `EventBus` | `ConcurrentHashMap` + `CopyOnWriteArrayList` | Thread-safe pub/sub |
+
+### 4.3 SOLID Principles Applied
+
+| Principle | Application |
+|-----------|-------------|
+| **S**ingle Responsibility | Each handler processes one command/query type; the aggregate enforces only business rules; the repository only loads/saves; the projection only updates the read model |
+| **O**pen/Closed | New commands, queries, events, and projections can be added by implementing the `Command`, `Query`, `DomainEvent`, `CommandHandler`, or `QueryHandler` interfaces — no existing code changes needed |
+| **L**iskov Substitution | Any `CommandHandler` or `QueryHandler` implementation can substitute for its interface in the `CommandBus` or `QueryBus` |
+| **I**nterface Segregation | `Command` and `Query` are separate marker interfaces; `CommandHandler` and `QueryHandler` are separate contracts — clients depend only on what they need |
+| **D**ependency Inversion | Handlers depend on the `AccountRepository` and `AccountReadModel` abstractions (simplified for this example; in production, these would be interfaces) |
+
+### 4.4 Thread-Safety Implementation
+
+```java
+// Event Store: ConcurrentHashMap for event streams
+static final class EventStore {
+    private final Map<String, List<DomainEvent>> streams = new ConcurrentHashMap<>();
+    // computeIfAbsent() + CopyOnWriteArrayList.addAll() are thread-safe
+}
+
+// Event Bus: ConcurrentHashMap + CopyOnWriteArrayList for pub/sub
+static final class EventBus {
+    private final Map<Class<?>, List<Consumer<?>>> subscribers = new ConcurrentHashMap<>();
+    // computeIfAbsent() + CopyOnWriteArrayList.add() are thread-safe
+}
+
+// Read Model: ConcurrentHashMap for views
+static final class AccountReadModel {
+    private final Map<String, AccountView> views = new ConcurrentHashMap<>();
+    // put(), get(), stream() are all thread-safe
+}
+
+// Command/Query Buses: ConcurrentHashMap for handler routing
+static final class CommandBus {
+    private final Map<Class<?>, CommandHandler<?, ?>> handlers = new ConcurrentHashMap<>();
+    // put(), get() are atomic
+}
+
+// Models: immutable records (no mutable state)
+record AccountView(String id, String owner, int balance, boolean closed) {}
+record AccountOpened(String aggregateId, String owner, int initialBalance) implements DomainEvent {}
+```
+
+### 4.5 Test Coverage
+
+| Test Category | Tests | Description |
+|---------------|-------|-------------|
+| Command side tests | 11 | Open, deposit, withdraw, close, business rule violations, error handling |
+| Query side tests | 3 | Find by id, list all, count, find by owner |
+| Event store tests | 3 | Append, load, aggregate count, exists check |
+| Event bus tests | 2 | Event routing, subscriber count |
+| Bus registration tests | 3 | Handler not found, handler counts |
+| Read model tests | 4 | Upsert, remove, findAll, findAllOpen |
+| Concurrency tests | 4 | 50-thread account creation, 20-thread deposits, 30-thread queries, 40-thread event bus |
+| Smoke test | 1 | End-to-end demonstration |
+| **Total** | **31** | All passing |
+
+### 4.6 Sample Output
+
+```
+=== Command Query Responsibility Segregation (CQRS) Pattern ===
+Separates write (command) and read (query) models for independent scaling and optimization
+
+--- COMMAND SIDE (writes) ---
+  [CMD] OpenAccount owner=Alice initialBalance=100 -> id=40a7a2ae
+  [CMD] OpenAccount owner=Bob initialBalance=50 -> id=a1ff8964
+  [CMD] DepositMoney id=40a7a2ae amount=200 -> balance=300
+  [CMD] WithdrawMoney id=a1ff8964 amount=20 -> balance=30
+  [CMD] DepositMoney id=a1ff8964 amount=70 -> balance=100
+  [CMD] CloseAccount id=a1ff8964
+
+--- QUERY SIDE (reads) ---
+Find Alice by id:  Optional[AccountView{id=40a7a2ae, owner=Alice, balance=300, closed=false}]
+Find Bob by id:    Optional[AccountView{id=a1ff8964, owner=Bob, balance=100, closed=true}]
+All open accounts: [AccountView{id=40a7a2ae, owner=Alice, balance=300, closed=false}]
+Open account count:1
+Accounts by owner: [AccountView{id=40a7a2ae, owner=Alice, balance=300, closed=false}]
+
+Benefits:
+- Write model is optimized for business rules & validation
+- Read model is optimized for queries (denormalized, fast lookups)
+- Read and write sides can scale independently
+- Read model can be rebuilt from the event stream at any time
+- Thread-safe infrastructure supports concurrent command/query dispatch
+```
+
+---
+
+## Benefits
+
+- **Independent optimization** — the write model is optimized for business rules; the read model is optimized for queries.
+- **Independent scaling** — read and write sides can scale separately to match their load profiles.
+- **Rebuildable read models** — the read model can always be rebuilt by replaying the event stream from the `EventStore`.
+- **Clear separation of concerns** — commands and queries have distinct, focused interfaces and handlers.
+- **Event-sourced audit trail** — the full history of state changes is preserved in the event store.
+- **Thread-safe by design** — `ConcurrentHashMap` + `CopyOnWriteArrayList` + immutable records.
+
+## Trade-offs
+
+- **Increased complexity** — two models and synchronization infrastructure must be maintained.
+- **Eventual consistency** — the read model may lag the write model (in this synchronous example they are consistent immediately).
+- **Learning curve** — teams must understand event-driven synchronization, projections, and event sourcing.
+- **Storage overhead** — the event store grows continuously; snapshots may be needed for large aggregates.
+
+## Category
+
+Architectural
+
+## Java Version
+
+Java 25

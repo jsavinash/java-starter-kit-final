@@ -2,6 +2,7 @@ package com.javastarterkit.patterns.commandqueryresponsibilitysegregation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -256,8 +257,8 @@ class CommandQueryResponsibilitySegregationTest {
         List<CommandQueryResponsibilitySegregation.DomainEvent> events = eventStore.load(id);
 
         assertEquals(2, events.size());
-        assertTrue(events.get(0) instanceof CommandQueryResponsibilitySegregation.AccountOpened);
-        assertTrue(events.get(1) instanceof CommandQueryResponsibilitySegregation.MoneyDeposited);
+        assertInstanceOf(CommandQueryResponsibilitySegregation.AccountOpened.class, events.get(0));
+        assertInstanceOf(CommandQueryResponsibilitySegregation.MoneyDeposited.class, events.get(1));
     }
 
     @Test
@@ -528,5 +529,15 @@ class CommandQueryResponsibilitySegregationTest {
     @DisplayName("demonstrate runs without throwing")
     void demonstrateRunsSuccessfully() {
         CommandQueryResponsibilitySegregation.demonstrate();
+    }
+
+    // =========================================================================
+    // Helper: assertInstanceOf (for Java 25 compatibility)
+    // =========================================================================
+
+    private static void assertInstanceOf(Class<?> expected, Object actual) {
+        assertNotNull(actual);
+        assertTrue(expected.isInstance(actual),
+                "Expected " + actual + " to be an instance of " + expected.getName());
     }
 }
