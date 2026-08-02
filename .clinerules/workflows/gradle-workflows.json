@@ -1,0 +1,78 @@
+{
+    "workflows": {
+        "buildAll": {
+            "name": "Build All Modules",
+            "description": "Builds all modules in the monorepo",
+            "command": "./gradlew build",
+            "workingDirectory": ".",
+            "timeout": 600,
+            "parallel": true
+        },
+        "buildPattern": {
+            "name": "Build Specific Pattern",
+            "description": "Builds a single design pattern module",
+            "command": "./gradlew :design-patterns:system-design-pattern:architectural:{pattern}:build",
+            "workingDirectory": ".",
+            "timeout": 120,
+            "parallel": false,
+            "parameters": {
+                "pattern": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Pattern name (e.g., flux, event-sourcing)"
+                }
+            }
+        },
+        "testPattern": {
+            "name": "Test Specific Pattern",
+            "description": "Runs tests for a single design pattern module",
+            "command": "./gradlew :design-patterns:system-design-pattern:architectural:{pattern}:test",
+            "workingDirectory": ".",
+            "timeout": 120,
+            "parallel": false,
+            "parameters": {
+                "pattern": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Pattern name (e.g., flux, event-sourcing)"
+                }
+            }
+        },
+        "runSpringBootApp": {
+            "name": "Run Spring Boot Application",
+            "description": "Runs a Spring Boot application",
+            "command": "./gradlew :apps:{category}:{app}:bootRun",
+            "workingDirectory": ".",
+            "timeout": 0,
+            "parallel": false,
+            "parameters": {
+                "category": {
+                    "type": "string",
+                    "required": true,
+                    "description": "App category (e.g., fundamentals, web, data)"
+                },
+                "app": {
+                    "type": "string",
+                    "required": true,
+                    "description": "App name (e.g., greeting-service, spring-boot-rest)"
+                }
+            }
+        },
+        "buildWithCache": {
+            "name": "Build with Configuration Cache",
+            "description": "Builds all modules with configuration cache enabled for faster builds",
+            "command": "./gradlew build --configuration-cache",
+            "workingDirectory": ".",
+            "timeout": 600,
+            "parallel": true
+        },
+        "parallelBuild": {
+            "name": "Parallel Build",
+            "description": "Builds all modules in parallel",
+            "command": "./gradlew build --parallel",
+            "workingDirectory": ".",
+            "timeout": 600,
+            "parallel": true
+        }
+    }
+}

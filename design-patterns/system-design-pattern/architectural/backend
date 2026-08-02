@@ -1,0 +1,104 @@
+# Backend-for-Frontend (BFF) — Simple Example
+
+A minimal, easy-to-understand demonstration of the BFF pattern.
+
+## What is BFF?
+
+Instead of a frontend calling multiple microservices directly:
+
+```
+❌ Without BFF:
+   Web App ──▶ User Service
+   Web App ──▶ Order Service
+   Web App ──▶ Product Service
+   (3 calls, frontend knows about all services)
+```
+
+You create a **dedicated backend for each frontend type**:
+
+```
+✅ With BFF:
+   Web App  ──▶ Web BFF  ──▶ User Service
+                         ──▶ Order Service
+                         ──▶ Product Service
+   (1 call, frontend only knows about its BFF)
+```
+
+## The Simple Example
+
+This example has just 2 microservices and 2 BFF controllers:
+
+```
+┌──────────┐      ┌─────────┐      ┌──────────────┐
+│ Web App  │─────▶│ WebBff  │─────▶│ UserService  │
+│          │      │         │─────▶│ OrderService │
+└──────────┘      └─────────┘      └──────────────┘
+
+┌──────────┐      ┌──────────┐     ┌──────────────┐
+│ Mobile   │─────▶│ MobileBff│────▶│ OrderService │
+│ App      │      │          │     │ (only 1!)    │
+└──────────┘      └──────────┘     └──────────────┘
+```
+
+### Key Idea
+
+| Frontend | BFF | Calls | Response |
+|----------|-----|-------|----------|
+| **Web** | `WebBff` | UserService + OrderService | Full dashboard: user name + order count |
+| **Mobile** | `MobileBff` | OrderService only | Lightweight badge: order count only |
+
+The **mobile BFF calls fewer services** because mobile apps want minimal data to save bandwidth.
+
+## Code Structure
+
+```
+SimpleBffExample.java
+├── UserService       ← Microservice: stores user names
+├── OrderService      ← Microservice: stores order counts
+├── WebBff            ← BFF for web: aggregates user + orders
+├── MobileBff         ← BFF for mobile: only fetches orders
+└── demonstrate()     ← Shows the pattern in action
+```
+
+## Running the Example
+
+```bash
+# Build
+./gradlew :design-patterns:system-design-pattern:architectural:backend-for-frontend:build
+
+# Run the simple example
+java -cp build/classes/java/main com.javastarterkit.patterns.backendforfrontend.SimpleBffExample
+```
+
+## Expected Output
+
+```
+=== Simple BFF Pattern Example ===
+
+Web frontend calls WebBff:
+  Web Dashboard → User: Alice | Orders: 3
+
+Mobile frontend calls MobileBff:
+  Mobile Badge → Orders: 3
+
+Key takeaway:
+  - Web BFF aggregates from 2 services (user + orders)
+  - Mobile BFF only calls 1 service (orders) — less data, less bandwidth
+  - Frontends don't know about microservices — they just call their BFF
+```
+
+## Why Use BFF?
+
+1. **Less frontend complexity** — Frontend makes 1 call instead of N calls
+2. **Tailored responses** — Web gets full data, mobile gets minimal data
+3. **Decoupling** — Frontend doesn't know about individual microservices
+4. **Independent evolution** — Web BFF can change without affecting mobile BFF
+
+## Files in This Module
+
+| File | Description |
+|------|-------------|
+| `SimpleBffExample.java` | **This** simple example (easy to understand) |
+| `BackendForFrontend.java` | Full production-grade implementation (advanced) |
+| `BackendForFrontendTest.java` | Tests for the full implementation |
+| `README.md` | Detailed LLD blueprint for the full implementation |

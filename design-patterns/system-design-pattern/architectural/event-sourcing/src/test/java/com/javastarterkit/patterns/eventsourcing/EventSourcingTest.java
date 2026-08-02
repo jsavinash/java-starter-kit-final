@@ -1,141 +1,202 @@
 package com.javastarterkit.patterns.eventsourcing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import com.javastarterkit.patterns.eventsourcing.EventSourcing.AccountAggregate;
-import com.javastarterkit.patterns.eventsourcing.EventSourcing.AccountOpened;
-import com.javastarterkit.patterns.eventsourcing.EventSourcing.BalanceProjection;
-import com.javastarterkit.patterns.eventsourcing.EventSourcing.DomainEvent;
-import com.javastarterkit.patterns.eventsourcing.EventSourcing.EventStore;
-import com.javastarterkit.patterns.eventsourcing.EventSourcing.MoneyDeposited;
-import com.javastarterkit.patterns.eventsourcing.EventSourcing.MoneyWithdrawn;
-import com.javastarterkit.patterns.eventsourcing.EventSourcing.Snapshot;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import com.javastarterkit.patterns.eventsourcing.application.projection.BalanceProjection;
+import com.javastarterkit.patterns.eventsourcing.application.service.AccountService;
+import com.javastarterkit.patterns.eventsourcing.exception.AggregateNotFoundException;
+import com.javastarterkit.patterns.eventsourcing.exception.DomainException;
+import com.javastarterkit.patterns.eventsourcing.exception.OptimisticLockException;
+import com.javastarterkit.patterns.eventsourcing.infrastructure.AccountState;
+import com.javastarterkit.patterns.eventsourcing.infrastructure.EventStore;
+import com.javastarterkit.patterns.eventsourcing.infrastructure.InMemoryEventStore;
+import com.javastarterkit.patterns.eventsourcing.infrastructure.PerAggregateLock;
+import com.javastarterkit.patterns.eventsourcing.infrastructure.SnapshotStore;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 /**
- * Unit tests verifying the event sourcing pattern: event replay rebuilds state,
- * commands produce new events, snapshots optimize loading, and projections
- * build read models from the event stream.
+ * Functional tests for the Event Sourcing pattern covering the end-to-end
+ * write path, rehydration, snapshots, projections, and invariants.
  */
 class EventSourcingTest {
 
-    @Test
-    @DisplayName("replaying an event stream rebuilds aggregate state")
-    void replayRebuildsState() {
-        String accountId = "acc-001";
-        List<DomainEvent> events = new ArrayList<>();
-        events.add(new AccountOpened(accountId, "Alice", 100, Instant.now(), 1));
-        events.add(new MoneyDeposited(accountId, 200, Instant.now(), 2));
-        events.add(new MoneyWithdrawn(accountId, 50, Instant.now(), 3));
+    private EventStore eventStore;
+    private SnapshotStore snapshotStore;
+    private PerAggregateLock perAggregateLock;
+    private AccountService accountService;
 
-        AccountAggregate account = AccountAggregate.replay(events);
-
-        assertEquals(accountId, account.id());
-        assertEquals("Alice", account.owner());
-        assertEquals(250, account.balance());
-        assertEquals(3, account.version());
+    @BeforeEach
+    void setUp() {
+        eventStore = new InMemoryEventStore();
+        snapshotStore = new SnapshotStore();
+        perAggregateLock = new PerAggregateLock();
+        accountService = new AccountService(eventStore, snapshotStore, perAggregateLock);
     }
 
     @Test
-    @DisplayName("withdraw command produces a new event and updates state")
-    void withdrawProducesEventAndUpdatesState() {
-        String accountId = "acc-001";
-        List<DomainEvent> events = new ArrayList<>();
-        events.add(new AccountOpened(accountId, "Bob", 100, Instant.now(), 1));
-        AccountAggregate account = AccountAggregate.replay(events);
+    @DisplayName("Open account with initial balance persists AccountOpened event")
+    void openAccount_persistsAccountOpenedEvent() {
+        accountService.openAccount("acc-001", "Alice", 100);
 
-        List<DomainEvent> newEvents = account.withdraw(40);
+        assertThat(eventStore.latestVersion("acc-001")).isEqualTo(1);
+        assertThat(eventStore.load("acc-001")).hasSize(1);
 
-        assertEquals(1, newEvents.size());
-        assertEquals(60, account.balance());
-        assertEquals(2, account.version());
+        var account = accountService.load("acc-001");
+        assertThat(account.id()).isEqualTo("acc-001");
+        assertThat(account.owner()).isEqualTo("Alice");
+        assertThat(account.balance()).isEqualTo(100);
+        assertThat(account.version()).isEqualTo(1);
     }
 
     @Test
-    @DisplayName("withdrawal exceeding balance is rejected")
-    void withdrawalExceedingBalanceIsRejected() {
-        String accountId = "acc-001";
-        List<DomainEvent> events = new ArrayList<>();
-        events.add(new AccountOpened(accountId, "Bob", 100, Instant.now(), 1));
-        AccountAggregate account = AccountAggregate.replay(events);
+    @DisplayName("Deposit and withdraw persist events and update aggregate state")
+    void depositAndWithdraw_updateStateAndAppendEvents() {
+        accountService.openAccount("acc-001", "Alice", 100);
+        accountService.deposit("acc-001", 200);
+        accountService.withdraw("acc-001", 50);
+        accountService.deposit("acc-001", 300);
+        accountService.withdraw("acc-001", 80);
 
-        assertThrows(IllegalStateException.class, () -> account.withdraw(200));
+        var account = accountService.load("acc-001");
+        assertThat(account.balance()).isEqualTo(470);
+        assertThat(account.version()).isEqualTo(5);
+        assertThat(eventStore.latestVersion("acc-001")).isEqualTo(5);
+        assertThat(eventStore.load("acc-001")).hasSize(5);
     }
 
     @Test
-    @DisplayName("snapshot captures state and can be restored")
-    void snapshotCapturesAndRestoresState() {
-        String accountId = "acc-001";
-        List<DomainEvent> events = new ArrayList<>();
-        events.add(new AccountOpened(accountId, "Alice", 100, Instant.now(), 1));
-        events.add(new MoneyDeposited(accountId, 200, Instant.now(), 2));
-        AccountAggregate account = AccountAggregate.replay(events);
+    @DisplayName("Replaying event stream rebuilds aggregate state deterministically")
+    void replayEventStream_rebuildsState() {
+        accountService.openAccount("acc-001", "Alice", 100);
+        accountService.deposit("acc-001", 200);
+        accountService.withdraw("acc-001", 50);
+        accountService.deposit("acc-001", 300);
 
-        Snapshot snapshot = Snapshot.take(account);
-        AccountAggregate restored = AccountAggregate.fromSnapshot(snapshot);
+        // Create a new service instance that shares the same event store
+        var service2 = new AccountService(eventStore, new SnapshotStore(), new PerAggregateLock());
+        var rebuilt = service2.load("acc-001");
 
-        assertEquals(account.id(), restored.id());
-        assertEquals(account.owner(), restored.owner());
-        assertEquals(account.balance(), restored.balance());
-        assertEquals(account.version(), restored.version());
+        assertThat(rebuilt.balance()).isEqualTo(550);
+        assertThat(rebuilt.owner()).isEqualTo("Alice");
+        assertThat(rebuilt.version()).isEqualTo(4);
     }
 
     @Test
-    @DisplayName("event store appends and loads events by aggregate id")
-    void eventStoreAppendsAndLoads() {
-        EventStore store = new EventStore();
-        String accountId = "acc-001";
+    @DisplayName("Snapshot preserves state and subsequent replay from snapshot is consistent")
+    void snapshotAndReplay_fromSnapshotIsConsistent() {
+        accountService.openAccount("acc-001", "Alice", 100);
+        accountService.deposit("acc-001", 200);
+        accountService.withdraw("acc-001", 50);
 
-        List<DomainEvent> events = new ArrayList<>();
-        events.add(new AccountOpened(accountId, "Alice", 100, Instant.now(), 1));
-        events.add(new MoneyDeposited(accountId, 50, Instant.now(), 2));
-        store.appendToStream(accountId, events);
+        // Take snapshot at version 3
+        accountService.takeSnapshot("acc-001");
 
-        List<DomainEvent> loaded = store.loadStream(accountId);
-        assertEquals(2, loaded.size());
+        var snapshot = snapshotStore.load("acc-001").orElseThrow();
+        assertThat(snapshot.version()).isEqualTo(3);
+        assertThat(snapshot.state()).isEqualTo(new AccountState("acc-001", "Alice", 250, false));
+
+        // Continue with more events, then reload from snapshot +
+        accountService.deposit("acc-001", 300);
+        var reloaded = accountService.load("acc-001");
+        assertThat(reloaded.balance()).isEqualTo(550);
+        assertThat(reloaded.version()).isEqualTo(4);
     }
 
     @Test
-    @DisplayName("event store loads events from a specific version")
-    void eventStoreLoadsFromVersion() {
-        EventStore store = new EventStore();
-        String accountId = "acc-001";
+    @DisplayName("Projection builds a read model from the event stream")
+    void projection_buildsReadModel() {
+        accountService.openAccount("acc-001", "Alice", 100);
+        accountService.deposit("acc-001", 200);
+        accountService.withdraw("acc-001", 50);
+        accountService.deposit("acc-001", 300);
 
-        List<DomainEvent> events = new ArrayList<>();
-        events.add(new AccountOpened(accountId, "Alice", 100, Instant.now(), 1));
-        events.add(new MoneyDeposited(accountId, 50, Instant.now(), 2));
-        events.add(new MoneyWithdrawn(accountId, 30, Instant.now(), 3));
-        store.appendToStream(accountId, events);
-
-        List<DomainEvent> afterVersion1 = store.loadStreamFromVersion(accountId, 1);
-        assertEquals(2, afterVersion1.size());
-    }
-
-    @Test
-    @DisplayName("projection aggregates financial metrics from events")
-    void projectionAggregatesMetrics() {
         BalanceProjection projection = new BalanceProjection();
-        String accountId = "acc-001";
+        eventStore.load("acc-001").forEach(projection::onEvent);
 
-        projection.onEvent(new AccountOpened(accountId, "Alice", 100, Instant.now(), 1));
-        projection.onEvent(new MoneyDeposited(accountId, 200, Instant.now(), 2));
-        projection.onEvent(new MoneyWithdrawn(accountId, 50, Instant.now(), 3));
-
-        assertEquals(300, projection.totalDeposited());
-        assertEquals(50, projection.totalWithdrawn());
-        assertEquals(250, projection.currentBalance());
-        assertEquals(3, projection.transactionCount());
+        assertThat(projection.totalDeposited()).isEqualTo(600);
+        assertThat(projection.totalWithdrawn()).isEqualTo(50);
+        assertThat(projection.currentBalance()).isEqualTo(550);
+        assertThat(projection.transactionCount()).isEqualTo(4);
     }
 
     @Test
-    @DisplayName("demonstrate runs without throwing")
-    void demonstrateRunsSuccessfully() {
-        // Smoke test: the public demonstration should complete without errors.
-        EventSourcing.demonstrate();
+    @DisplayName("Withdraw more than balance throws DomainException")
+    void withdrawOverBalance_throwsDomainException() {
+        accountService.openAccount("acc-001", "Alice", 100);
+
+        assertThatThrownBy(() -> accountService.withdraw("acc-001", 150))
+                .isInstanceOf(DomainException.class)
+                .hasMessageContaining("Insufficient funds");
+
+        // State unchanged
+        assertThat(accountService.load("acc-001").balance()).isEqualTo(100);
+        assertThat(eventStore.latestVersion("acc-001")).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("Deposit non-positive amount throws DomainException")
+    void depositNonPositive_throwsDomainException() {
+        accountService.openAccount("acc-001", "Alice", 100);
+
+        assertThatThrownBy(() -> accountService.deposit("acc-001", 0))
+                .isInstanceOf(DomainException.class)
+                .hasMessageContaining("must be positive");
+    }
+
+    @Test
+    @DisplayName("Close account prevents further transactions")
+    void closeAccount_preventsFurtherTransactions() {
+        accountService.openAccount("acc-001", "Alice", 100);
+        accountService.closeAccount("acc-001");
+
+        assertThat(accountService.load("acc-001").isClosed()).isTrue();
+
+        assertThatThrownBy(() -> accountService.deposit("acc-001", 50))
+                .isInstanceOf(DomainException.class)
+                .hasMessageContaining("closed account");
+
+        assertThatThrownBy(() -> accountService.withdraw("acc-001", 10))
+                .isInstanceOf(DomainException.class)
+                .hasMessageContaining("closed account");
+    }
+
+    @Test
+    @DisplayName("Loading non-existent aggregate throws AggregateNotFoundException")
+    void loadNonExistent_throwsAggregateNotFoundException() {
+        assertThatThrownBy(() -> accountService.load("acc-999"))
+                .isInstanceOf(AggregateNotFoundException.class)
+                .hasMessageContaining("acc-999");
+    }
+
+    @Test
+    @DisplayName("EventStore append with stale expectedVersion throws OptimisticLockException")
+    void appendWithStaleVersion_throwsOptimisticLockException() {
+        accountService.openAccount("acc-001", "Alice", 100);
+        accountService.deposit("acc-001", 200);
+
+        var conflictEvent = new com.javastarterkit.patterns.eventsourcing.domain.event.MoneyDeposited(
+                "acc-001", 500, Instant.now(), 3);
+
+        // Try to append with stale expectedVersion (1 instead of current 2)
+        assertThatThrownBy(() ->
+                eventStore.append("acc-001", java.util.List.of(conflictEvent), 1))
+                .isInstanceOf(OptimisticLockException.class)
+                .hasMessageContaining("Version conflict");
+
+        // Stream unchanged
+        assertThat(eventStore.latestVersion("acc-001")).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("Negative initial balance throws DomainException")
+    void negativeInitialBalance_throwsDomainException() {
+        assertThatThrownBy(() -> accountService.openAccount("acc-001", "Alice", -10))
+                .isInstanceOf(DomainException.class)
+                .hasMessageContaining("Initial balance cannot be negative");
     }
 }

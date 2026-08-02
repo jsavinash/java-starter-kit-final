@@ -1,0 +1,365 @@
+package com.javastarterkit.patterns.modelviewintent;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import com.javastarterkit.patterns.modelviewintent.core.MviStore;
+import com.javastarterkit.patterns.modelviewintent.core.ViewObserver;
+import com.javastarterkit.patterns.modelviewintent.exception.InvalidIntentException;
+import com.javastarterkit.patterns.modelviewintent.intent.AddTask;
+import com.javastarterkit.patterns.modelviewintent.intent.CompleteTask;
+import com.javastarterkit.patterns.modelviewintent.intent.Decrement;
+import com.javastarterkit.patterns.modelviewintent.intent.Increment;
+import com.javastarterkit.patterns.modelviewintent.intent.Reset;
+import com.javastarterkit.patterns.modelviewintent.reducer.CounterReducer;
+import com.javastarterkit.patterns.modelviewintent.reducer.TaskReducer;
+import com.javastarterkit.patterns.modelviewintent.state.CounterState;
+import com.javastarterkit.patterns.modelviewintent.state.TaskItem;
+import com.javastarterkit.patterns.modelviewintent.state.TaskState;
+import com.javastarterkit.patterns.modelviewintent.view.CounterView;
+import com.javastarterkit.patterns.modelviewintent.view.TaskListView;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Comprehensive test suite for the Model-View-Intent (MVI) pattern.
+ *
+ * <p>Covers: intent validation, state immutability, reducer purity,
+ * store dispatch, observer notification, error handling, and concurrency.
+ */
+@DisplayName("Model-View-Intent Tests")
+class ModelViewIntentAppTest {
+
+    // =========================================================================
+    // INTENT VALIDATION
+    // =========================================================================
+
+    @Test
+    @DisplayName("AddTask rejects null description")
+    void addTaskRejectsNullDescription() {
+        assertThatThrownBy(() -> new AddTask(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Task description must not be null");
+    }
+
+    @Test
+    @DisplayName("AddTask rejects blank description")
+    void addTaskRejectsBlankDescription() {
+        assertThatThrownBy(() -> new AddTask("  "))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Task description must not be blank");
+    }
+
+    @Test
+    @DisplayName("CompleteTask rejects negative index")
+    void completeTaskRejectsNegativeIndex() {
+        assertThatThrownBy(() -> new CompleteTask(-1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Task index must be non-negative");
+    }
+
+    // =========================================================================
+    // STATE IMMUTABILITY
+    // =========================================================================
+
+    @Test
+    @DisplayName("CounterState copyWith creates new instance")
+    void counterStateCopyWithCreatesNewInstance() {
+        CounterState original = new CounterState(5);
+        CounterState copy = original.copyWith(10);
+
+        assertThat(original.count()).isEqualTo(5);
+        assertThat(copy.count()).isEqualTo(10);
+        assertThat(copy).isNotSameAs(original);
+    }
+
+    @Test
+    @DisplayName("TaskState creates defensive copy of tasks")
+    void taskStateCreatesDefensiveCopy() {
+        List<TaskItem> mutable = new java.util.ArrayList<>(List.of(new TaskItem("Task", false)));
+        TaskState state = new TaskState(mutable);
+
+        mutable.add(new TaskItem("Extra", false));
+
+        assertThat(state.tasks()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("TaskState tasks list is immutable")
+    void taskStateTasksListIsImmutable() {
+        TaskState state = new TaskState(List.of(new TaskItem("Task", false)));
+
+        assertThatThrownBy(() -> state.tasks().add(new TaskItem("Extra", false)))
+                .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    @DisplayName("TaskItem complete returns new instance")
+    void taskItemCompleteReturnsNewInstance() {
+        TaskItem original = new TaskItem("Task", false);
+        TaskItem completed = original.complete();
+
+        assertThat(original.completed()).isFalse();
+        assertThat(completed.completed()).isTrue();
+        assertThat(completed).isNotSameAs(original);
+    }
+
+    // =========================================================================
+    // REDUCER PURITY
+    // =========================================================================
+
+    @Test
+    @DisplayName("CounterReducer increment produces new state")
+    void counterReducerIncrementProducesNewState() {
+        CounterReducer reducer = new CounterReducer();
+        CounterState state = new CounterState(5);
+
+        CounterState newState = reducer.reduce(state, new Increment());
+
+        assertThat(state.count()).isEqualTo(5);
+        assertThat(newState.count()).isEqualTo(6);
+    }
+
+    @Test
+    @DisplayName("CounterReducer decrement produces new state")
+    void counterReducerDecrementProducesNewState() {
+        CounterReducer reducer = new CounterReducer();
+        CounterState state = new CounterState(5);
+
+        CounterState newState = reducer.reduce(state, new Decrement());
+
+        assertThat(state.count()).isEqualTo(5);
+        assertThat(newState.count()).isEqualTo(4);
+    }
+
+    @Test
+    @DisplayName("CounterReducer reset produces zero state")
+    void counterReducerResetProducesZeroState() {
+        CounterReducer reducer = new CounterReducer();
+        CounterState state = new CounterState(10);
+
+        CounterState newState = reducer.reduce(state, new Reset());
+
+        assertThat(state.count()).isEqualTo(10);
+        assertThat(newState.count()).isZero();
+    }
+
+    @Test
+    @DisplayName("TaskReducer addTask produces new state with task")
+    void taskReducerAddTaskProducesNewState() {
+        TaskReducer reducer = new TaskReducer();
+        TaskState state = new TaskState(List.of());
+
+        TaskState newState = reducer.reduce(state, new AddTask("Buy groceries"));
+
+        assertThat(state.tasks()).isEmpty();
+        assertThat(newState.tasks()).hasSize(1);
+        assertThat(newState.tasks().get(0).description()).isEqualTo("Buy groceries");
+        assertThat(newState.tasks().get(0).completed()).isFalse();
+    }
+
+    @Test
+    @DisplayName("TaskReducer completeTask produces new state with completed task")
+    void taskReducerCompleteTaskProducesNewState() {
+        TaskReducer reducer = new TaskReducer();
+        TaskState state = new TaskState(List.of(new TaskItem("Task 1", false)));
+
+        TaskState newState = reducer.reduce(state, new CompleteTask(0));
+
+        assertThat(state.tasks().get(0).completed()).isFalse();
+        assertThat(newState.tasks().get(0).completed()).isTrue();
+    }
+
+    @Test
+    @DisplayName("TaskReducer completeTask throws for invalid index")
+    void taskReducerCompleteTaskThrowsForInvalidIndex() {
+        TaskReducer reducer = new TaskReducer();
+        TaskState state = new TaskState(List.of());
+
+        assertThatThrownBy(() -> reducer.reduce(state, new CompleteTask(5)))
+                .isInstanceOf(InvalidIntentException.class)
+                .hasMessage("Invalid task index: 5");
+    }
+
+    // =========================================================================
+    // STORE DISPATCH
+    // =========================================================================
+
+    @Test
+    @DisplayName("Store dispatch updates state")
+    void storeDispatchUpdatesState() {
+        MviStore<CounterState, ?> store = new MviStore<>(new CounterState(0), new CounterReducer());
+
+        store.dispatch(new Increment());
+        assertThat(store.state().count()).isEqualTo(1);
+
+        store.dispatch(new Increment());
+        assertThat(store.state().count()).isEqualTo(2);
+
+        store.dispatch(new Decrement());
+        assertThat(store.state().count()).isEqualTo(1);
+
+        store.dispatch(new Reset());
+        assertThat(store.state().count()).isZero();
+    }
+
+    @Test
+    @DisplayName("Store dispatch notifies observers")
+    void storeDispatchNotifiesObservers() {
+        MviStore<CounterState, ?> store = new MviStore<>(new CounterState(0), new CounterReducer());
+        AtomicInteger notifications = new AtomicInteger();
+        store.addObserver(state -> notifications.incrementAndGet());
+
+        store.dispatch(new Increment());
+        store.dispatch(new Increment());
+
+        assertThat(notifications.get()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("Store stops notifying removed observers")
+    void storeStopsNotifyingRemovedObservers() {
+        MviStore<CounterState, ?> store = new MviStore<>(new CounterState(0), new CounterReducer());
+        AtomicInteger notifications = new AtomicInteger();
+        ViewObserver<CounterState> observer = state -> notifications.incrementAndGet();
+        store.addObserver(observer);
+
+        store.dispatch(new Increment());
+        store.removeObserver(observer);
+        store.dispatch(new Increment());
+
+        assertThat(notifications.get()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("Store rejects null initial state")
+    void storeRejectsNullInitialState() {
+        assertThatThrownBy(() -> new MviStore<>(null, new CounterReducer()))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Initial state must not be null");
+    }
+
+    @Test
+    @DisplayName("Store rejects null reducer")
+    void storeRejectsNullReducer() {
+        assertThatThrownBy(() -> new MviStore<>(new CounterState(0), null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Reducer must not be null");
+    }
+
+    @Test
+    @DisplayName("Store rejects null intent")
+    void storeRejectsNullIntent() {
+        MviStore<CounterState, ?> store = new MviStore<>(new CounterState(0), new CounterReducer());
+
+        assertThatThrownBy(() -> store.dispatch(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Intent must not be null");
+    }
+
+    // =========================================================================
+    // TASK STORE
+    // =========================================================================
+
+    @Test
+    @DisplayName("Task store adds and completes tasks")
+    void taskStoreAddsAndCompletesTasks() {
+        MviStore<TaskState, ?> store = new MviStore<>(new TaskState(List.of()), new TaskReducer());
+
+        store.dispatch(new AddTask("Buy groceries"));
+        store.dispatch(new AddTask("Write report"));
+        store.dispatch(new CompleteTask(0));
+
+        TaskState state = store.state();
+        assertThat(state.tasks()).hasSize(2);
+        assertThat(state.tasks().get(0).completed()).isTrue();
+        assertThat(state.tasks().get(1).completed()).isFalse();
+    }
+
+    // =========================================================================
+    // VIEWS
+    // =========================================================================
+
+    @Test
+    @DisplayName("CounterView renders without throwing")
+    void counterViewRendersWithoutThrowing() {
+        CounterView view = new CounterView();
+        view.render(new CounterState(42));
+    }
+
+    @Test
+    @DisplayName("TaskListView renders without throwing")
+    void taskListViewRendersWithoutThrowing() {
+        TaskListView view = new TaskListView();
+        view.render(new TaskState(List.of(new TaskItem("Task", true))));
+    }
+
+    // =========================================================================
+    // CONCURRENCY
+    // =========================================================================
+
+    @Test
+    @DisplayName("Store handles 100 concurrent dispatches safely")
+    void storeHandlesConcurrentDispatches() throws InterruptedException {
+        int threadCount = 100;
+        MviStore<CounterState, ?> store = new MviStore<>(new CounterState(0), new CounterReducer());
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            executor.submit(() -> {
+                try {
+                    store.dispatch(new Increment());
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        assertThat(latch.await(10, TimeUnit.SECONDS)).isTrue();
+        executor.shutdown();
+        assertThat(store.state().count()).isEqualTo(threadCount);
+    }
+
+    @Test
+    @DisplayName("Store handles concurrent observer notifications safely")
+    void storeHandlesConcurrentNotifications() throws InterruptedException {
+        int threadCount = 50;
+        MviStore<CounterState, ?> store = new MviStore<>(new CounterState(0), new CounterReducer());
+        AtomicInteger notifications = new AtomicInteger();
+        store.addObserver(state -> notifications.incrementAndGet());
+
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            executor.submit(() -> {
+                try {
+                    store.dispatch(new Increment());
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        assertThat(latch.await(10, TimeUnit.SECONDS)).isTrue();
+        executor.shutdown();
+        assertThat(notifications.get()).isEqualTo(threadCount);
+    }
+
+    // =========================================================================
+    // END-TO-END
+    // =========================================================================
+
+    @Test
+    @DisplayName("Demonstrate runs without throwing")
+    void demonstrateRunsSuccessfully() {
+        ModelViewIntentApp.demonstrate();
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "workflows": {
+        "deployToMavenLocal": {
+            "name": "Deploy to Maven Local",
+            "description": "Publishes all modules to local Maven repository",
+            "command": "./gradlew publishToMavenLocal",
+            "workingDirectory": ".",
+            "timeout": 600,
+            "parallel": true
+        },
+        "release": {
+            "name": "Create Release",
+            "description": "Creates a new release with version bump",
+            "command": "./gradlew release -Prelease.version={version}",
+            "workingDirectory": ".",
+            "timeout": 600,
+            "parallel": false,
+            "parameters": {
+                "version": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Version number (e.g., 1.0.0)"
+                }
+            }
+        },
+        "dockerBuild": {
+            "name": "Build Docker Images",
+            "description": "Builds Docker images for Spring Boot applications",
+            "command": "./gradlew bootBuildImage",
+            "workingDirectory": ".",
+            "timeout": 600,
+            "parallel": false
+        },
+        "generateDocumentation": {
+            "name": "Generate Documentation",
+            "description": "Generates Javadoc and pattern documentation",
+            "command": "./gradlew javadocAll",
+            "workingDirectory": ".",
+            "timeout": 300,
+            "parallel": true
+        }
+    }
+}

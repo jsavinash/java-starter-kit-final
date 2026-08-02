@@ -12,18 +12,33 @@ This example models a simple **web request pipeline** to demonstrate the full in
 intercepting-filter/
 ├── build.gradle.kts
 ├── README.md
+├── LLD.md
 └── src/
     ├── main/java/com/javastarterkit/patterns/interceptingfilter/
-    │   └── InterceptingFilter.java
+    │   ├── InterceptingFilterApp.java
+    │   ├── core/
+    │   │   ├── Filter.java
+    │   │   ├── Target.java
+    │   │   ├── FilterChain.java
+    │   │   ├── FilterManager.java
+    │   │   └── HomePageTarget.java
+    │   ├── models/
+    │   │   ├── Request.java
+    │   │   └── Response.java
+    │   └── filters/
+    │       ├── AuthenticationFilter.java
+    │       ├── LoggingFilter.java
+    │       ├── RateLimitFilter.java
+    │       ├── CompressionFilter.java
+    │       └── AuditFilter.java
     └── test/java/com/javastarterkit/patterns/interceptingfilter/
-        └── InterceptingFilterTest.java
+        └── InterceptingFilterAppTest.java
 ```
 
 ## Implementation
 
-The example is a single self-contained Java file with inner static classes/interfaces organized into four parts:
-
 ### Core Components
+
 | Component | Responsibility |
 |-----------|---------------|
 | `Request` | Immutable record carrying method, user, path, and payload |
@@ -31,13 +46,16 @@ The example is a single self-contained Java file with inner static classes/inter
 | `Filter` | Abstract base class with `before` / `after` hooks |
 | `FilterChain` | Holds ordered filters and invokes them around a `Target`; aborts if any filter returns `false` from `before` |
 | `Target` | The actual business handler interface |
+| `FilterManager` | Entry point for clients; owns the `FilterChain` and exposes `process()` |
 
 ### Target
+
 | Component | Responsibility |
 |-----------|---------------|
 | `HomePageTarget` | Simple target that renders the home page for a user |
 
 ### Concrete Filters
+
 | Filter | Responsibility |
 |--------|---------------|
 | `AuthenticationFilter` | Rejects unauthenticated requests (aborts chain) |
@@ -47,6 +65,7 @@ The example is a single self-contained Java file with inner static classes/inter
 | `AuditFilter` | Records every request after processing |
 
 ### Manager
+
 | Component | Responsibility |
 |-----------|---------------|
 | `FilterManager` | Entry point for clients; owns the `FilterChain` and exposes `process()` |
@@ -74,22 +93,19 @@ The example is a single self-contained Java file with inner static classes/inter
 === Intercepting Filter Pattern ===
 Process requests through a chain of reusable filters
 
---- Request 1: valid user ---
+--- Request 1: valid user 'alice' ---
   [AUTH] Authenticated user 'alice'
   [LOG]  -> GET /home user=alice
   [RATE] User 'alice' request 1/3
   [COMP] Preparing compression for /home
-  [COMP] Compressed response (30 -> 44 chars)
-  [LOG]  <- status=200 body='<compressed>Welcome alice to the home page!</compressed>'
-  Response status: 200 | body: <compressed>Welcome alice to the home page!</compressed>
+  [TARGET] Home page rendered for user 'alice'
+  [COMP] Compressed response (XX -> XX chars)
+  [LOG]  <- status=200 body='<compressed>Welcome alice...<compressed>'
+  [AUDIT] Recorded GET /home for user 'alice' (status=200)
+  Response status: 200 | body: <compressed>Welcome alice...</compressed>
 
---- Request 2: blocked (rate limit exceeded) ---
-  [AUTH] Authenticated user 'alice'
-  [LOG]  -> GET /home user=alice
-  [RATE] User 'alice' request 2/3
-  [COMP] Preparing compression for /home
+--- Request 2: rate limit exceeded ---
   ...
-  [RATE] User 'alice' exceeded limit of 3
   Response status: 403 | body: Blocked by RateLimitFilter
 
 --- Request 3: unauthenticated ---
@@ -97,7 +113,7 @@ Process requests through a chain of reusable filters
   Response status: 403 | body: Blocked by AuthenticationFilter
 
 Benefits:
-- Cross-cutting concerns are isolated into reusable filters
+- Cross-cutting concerns isolated into reusable filters
 - Filters can abort the chain (auth failure, rate limit)
 - New concerns added without changing the target handler
 - Filters execute in configurable order

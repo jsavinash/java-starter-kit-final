@@ -1,0 +1,63 @@
+{
+    "workflows": {
+        "testAll": {
+            "name": "Run All Tests",
+            "description": "Executes all tests across the monorepo",
+            "command": "./gradlew test",
+            "workingDirectory": ".",
+            "timeout": 600,
+            "parallel": true
+        },
+        "testPattern": {
+            "name": "Test Specific Pattern",
+            "description": "Runs tests for a single design pattern module",
+            "command": "./gradlew :design-patterns:system-design-pattern:architectural:{pattern}:test",
+            "workingDirectory": ".",
+            "timeout": 120,
+            "parallel": false,
+            "parameters": {
+                "pattern": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Pattern name (e.g., flux, event-sourcing)"
+                }
+            }
+        },
+        "testWithCoverage": {
+            "name": "Test with Coverage Report",
+            "description": "Runs tests and generates JaCoCo coverage report",
+            "command": "./gradlew test jacocoTestReport",
+            "workingDirectory": ".",
+            "timeout": 600,
+            "parallel": true
+        },
+        "testSingleClass": {
+            "name": "Test Single Class",
+            "description": "Runs a specific test class",
+            "command": "./gradlew :design-patterns:system-design-pattern:architectural:{pattern}:test --tests '{testClass}'",
+            "workingDirectory": ".",
+            "timeout": 60,
+            "parallel": false,
+            "parameters": {
+                "pattern": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Pattern name (e.g., flux)"
+                },
+                "testClass": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Test class name (e.g., FluxTest)"
+                }
+            }
+        },
+        "concurrencyTest": {
+            "name": "Run Concurrency Tests",
+            "description": "Executes concurrency-specific tests",
+            "command": "./gradlew test --tests '*ConcurrencyTest'",
+            "workingDirectory": ".",
+            "timeout": 300,
+            "parallel": false
+        }
+    }
+}

@@ -1,76 +1,147 @@
 package com.javastarterkit.patterns.frontcontroller;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Map;
+import com.javastarterkit.patterns.frontcontroller.commands.DashboardCommand;
+import com.javastarterkit.patterns.frontcontroller.commands.HomeCommand;
+import com.javastarterkit.patterns.frontcontroller.commands.LoginCommand;
+import com.javastarterkit.patterns.frontcontroller.commands.UnknownCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Unit tests verifying the Front Controller pattern: centralized request
- * handling, authentication checks, command dispatching, and error handling.
+ * Unit tests verifying the Front Controller pattern: centralized request handling,
+ * authentication checks, command dispatching, and error handling.
  */
+@ExtendWith(MockitoExtension.class)
+@DisplayName("Front Controller Tests")
 class FrontControllerTest {
 
     private FrontController controller;
+    private CommandRegistry registry;
+    private AuthenticationService authService;
+    private RequestLogger logger;
 
     @BeforeEach
     void setUp() {
-        controller = new FrontController();
-        controller.registerCommand("/home", new FrontController.HomeCommand());
-        controller.registerCommand("/login", new FrontController.LoginCommand());
-        controller.registerCommand("/dashboard", new FrontController.DashboardCommand());
+        registry = new CommandRegistry();
+        authService = new AuthenticationService();
+        logger = new RequestLogger();
+        controller = new FrontController(registry, authService, logger);
+
+        // Register commands
+        registry.register("/home", new HomeCommand());
+        registry.register("/login", new LoginCommand(authService));
+        registry.register("/dashboard", new DashboardCommand());
     }
 
     @Test
-    @DisplayName("unauthenticated access to public home page succeeds")
+    @DisplayName("public home page succeeds without authentication")
     void publicHomePageSucceeds() {
-        controller.handleRequest(new FrontController.Request("/home", null));
-        assertTrue(true);
+        Response response = controller.handleRequest(Request.of("/home"));
+
+        assertThat(response).isNotNull();
+        assertThat(response.isSuccess()).isTrue();
+        assertThat(response.body()).contains("Welcome to the home page");
     }
 
     @Test
     @DisplayName("dashboard access is rejected when not authenticated")
     void dashboardRejectedWhenNotAuthenticated() {
-        controller.handleRequest(new FrontController.Request("/dashboard", Map.of()));
-        assertAuthenticated(false);
+        Response response = controller.handleRequest(Request.of("/dashboard"));
+
+        assertThat(response).isNotNull();
+        assertThat(response.isRedirect()).isTrue();
+        assertThat(response.body()).contains("Redirecting to /login");
     }
 
     @Test
     @DisplayName("dashboard access succeeds after authentication")
     void dashboardSucceedsAfterAuthentication() {
-        controller.authenticate("alice");
-        controller.handleRequest(new FrontController.Request("/dashboard", Map.of()));
-        assertAuthenticated(true);
+        // Authenticate user
+        boolean authenticated = controller.authenticate("alice", "password123");
+        assertThat(authenticated).isTrue();
+
+        // Now access dashboard
+        Response response = controller.handleRequest(Request.of("/dashboard", Map.of("username", "alice")));
+
+        assertThat(response).isNotNull();
+        assertThat(response.isSuccess()).isTrue();
+        assertThat(response.body()).contains("Welcome to your protected dashboard");
     }
 
     @Test
-    @DisplayName("unknown route returns 404 response")
+    @DisplayName("unknown route returns 404 error response")
     void unknownRouteReturns404() {
-        controller.handleRequest(new FrontController.Request("/unknown", Map.of()));
-        assertTrue(true);
+        Response response = controller.handleRequest(Request.of("/unknown"));
+
+        assertThat(response).isNotNull();
+        assertThat(response.isError()).isTrue();
+        assertThat(response.body()).contains("404 Not Found");
     }
 
     @Test
-    @DisplayName("demonstrate runs without throwing")
+    @DisplayName("login with valid credentials succeeds")
+    void loginWithValidCredentialsSucceeds() {
+        Response response = controller.handleRequest(
+            Request.of("/login", Map.of("username", "alice", "password", "secret"))
+        );
+
+        assertThat(response).isNotNull();
+        assertThat(response.isSuccess()).isTrue();
+        assertThat(response.body()).contains("Login successful for user: alice");
+    }
+
+    @Test
+    @DisplayName("login with missing credentials fails")
+    void loginWithMissingCredentialsFails() {
+        Response response = controller.handleRequest(
+            Request.of("/login", Map.of("username", "alice"))
+        );
+
+        assertThat(response).isNotNull();
+        assertThat(response.isError()).isTrue();
+        assertThat(response.body()).contains("Invalid credentials");
+    }
+
+    @Test
+    @DisplayName("null request throws NullPointerException")
+    void nullRequestThrowsNullPointerException() {
+        assertThatThrownBy(() -> controller.handleRequest(null))
+            .isInstanceOf(NullPointerException.class)
+            .hasMessage("Request cannot be null");
+    }
+
+    @Test
+    @DisplayName("demonstrate runs without throwing exceptions")
     void demonstrateRunsSuccessfully() {
         FrontController.demonstrate();
     }
 
-    private void assertAuthenticated(boolean expected) {
-        try {
-            java.lang.reflect.Field field = FrontController.class.getDeclaredField("authenticated");
-            field.setAccessible(true);
-            assertEquals(expected, (Boolean) field.get(controller));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    @Test
+    @DisplayName("command registry lookup is case sensitive")
+    void commandRegistryIsCaseSensitive() {
+        Response response = controller.handleRequest(Request.of("/HOME"));
+        assertThat(response).isNotNull();
+        assertThat(response.isError()).isTrue();
+        assertThat(response.body()).contains("404 Not Found");
     }
 
-    private static void assertEquals(boolean expected, boolean actual) {
-        if (expected != actual) {
-            throw new AssertionError("Expected " + expected + " but was " + actual);
-        }
+    @Test
+    @DisplayName("dashboard access with query params succeeds after authentication")
+    void dashboardAccessWithQueryParamsSucceeds() {
+        controller.authenticate("bob", "pass456");
+        Response response = controller.handleRequest(
+            Request.of("/dashboard", Map.of("username", "bob", "tab", "settings"))
+        );
+
+        assertThat(response).isNotNull();
+        assertThat(response.isSuccess()).isTrue();
     }
 }

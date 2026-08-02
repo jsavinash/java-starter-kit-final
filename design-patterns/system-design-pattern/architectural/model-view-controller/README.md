@@ -1,16 +1,14 @@
-# Model View Controller (MVC) Pattern
+# Model-View-Controller (MVC) Pattern
 
 ## Overview
 
-**Model-View-Controller (MVC)** separates the application into three interconnected components:
+The **Model-View-Controller (MVC)** pattern separates the application into three interconnected components:
 
-1. **Model** — manages data and business rules; notifies views when it changes
-2. **View** — renders the model data to the user; observes the model
-3. **Controller** — receives user input, updates the model, and coordinates views
+- **Model** — manages data and business rules; notifies views when it changes
+- **View** — renders the model data to the user; observes the model and re-renders on change
+- **Controller** — receives user input, updates the model, and coordinates views
 
-The Model has **no knowledge** of the View or Controller. The View has **no knowledge** of the Controller's logic — it only knows how to render the Model and forward user actions. The Controller orchestrates the flow between them.
-
-This example models a simple **task management app** to demonstrate the full MVC flow.
+This example models a **task management app** with a thread-safe `TaskList` model, two views (Console and HTML), and a `TaskController` that handles user commands.
 
 ## Structure
 
@@ -18,41 +16,43 @@ This example models a simple **task management app** to demonstrate the full MVC
 model-view-controller/
 ├── build.gradle.kts
 ├── README.md
+├── LLD.md
 └── src/
     ├── main/java/com/javastarterkit/patterns/modelviewcontroller/
-    │   └── ModelViewController.java
+    │   ├── ModelViewControllerApp.java      # Main entry point (wires MVC)
+    │   ├── model/                           # Model layer
+    │   │   ├── Task.java                    # Task entity (synchronized state)
+    │   │   └── TaskList.java                # Task list model (observer pattern)
+    │   ├── view/                            # View layer
+    │   │   ├── TaskView.java                # View contract (interface)
+    │   │   ├── ConsoleTaskView.java         # Console rendering
+    │   │   └── HtmlTaskView.java            # HTML rendering
+    │   ├── controller/                      # Controller layer
+    │   │   └── TaskController.java          # User input handler
+    │   └── exception/                       # Exception hierarchy
+    │       ├── MvcException.java            # Base runtime exception
+    │       └── TaskNotFoundException.java   # Task not found
     └── test/java/com/javastarterkit/patterns/modelviewcontroller/
-        └── ModelViewControllerTest.java
+        └── ModelViewControllerAppTest.java
 ```
 
 ## Implementation
 
-The example is a single self-contained Java file with inner static classes/interfaces organized into three MVC components:
-
-### Model
+### Components
 | Component | Responsibility |
 |-----------|---------------|
-| `Task` | A single task with description and completed state |
-| `TaskList` | Manages tasks and business rules; notifies registered views on every change |
-
-### View
-| Component | Responsibility |
-|-----------|---------------|
-| `TaskView` | View contract: renders the model and is notified when it changes |
-| `ConsoleTaskView` | Renders tasks as plain text with progress (e.g., `[x]`, `[ ]`) |
-| `HtmlTaskView` | Renders tasks as HTML — demonstrates multiple views for the same model |
-
-### Controller
-| Component | Responsibility |
-|-----------|---------------|
-| `TaskController` | Receives user commands (`addTask`, `completeTask`, `listTasks`) and updates the model |
+| `Task` | Task entity with immutable ID/description and synchronized completion state |
+| `TaskList` | Thread-safe model with observer notification using `CopyOnWriteArrayList` |
+| `TaskView` | View contract: renders the model and observes changes |
+| `ConsoleTaskView` | Renders tasks as plain text |
+| `HtmlTaskView` | Renders tasks as HTML (multiple views for one model) |
+| `TaskController` | Receives user input, validates, and updates the model |
 
 ### Flow
-1. The **View** renders the **Model's** current state.
-2. The user performs an action, which the **Controller** receives.
-3. The **Controller** validates and updates the **Model**.
-4. The **Model** notifies all registered **Views** of the change.
-5. The **Views** re-render with the new state.
+1. The user issues a command (e.g., `addTask`) through the controller.
+2. The controller delegates to the model.
+3. The model updates its state and notifies all registered views.
+4. Each view renders the updated model in its own format.
 
 ## Usage
 
@@ -104,18 +104,17 @@ Benefits:
 
 ## Benefits
 
-- **Separation of concerns** — data (Model), presentation (View), and input handling (Controller) are cleanly separated.
-- **Multiple views** — one Model can be rendered by many Views (console, HTML, mobile, etc.) with automatic synchronization via observers.
-- **Testability** — each component can be tested in isolation.
-- **Parallel development** — designers work on Views while developers work on Models and Controllers.
-- **Reusability** — the same Model can be reused across different front-end technologies.
+- **Separation of concerns** — each component has a single, well-defined responsibility.
+- **Multiple views** — multiple views can observe the same model and render it differently.
+- **Model independence** — the model has no knowledge of views or controllers.
+- **Thread-safety** — `CopyOnWriteArrayList` and synchronized task state ensure safe concurrent access.
+- **Extensibility** — new views can be added without modifying the model or controller.
 
 ## Trade-offs
 
-- **Complexity** — for simple UIs, MVC can introduce more classes than necessary.
-- **Observer overhead** — models must manage observer lists and notifications.
-- **Controller bloat** — without discipline, controllers can accumulate too much logic.
-- **Indirection** — data flows through three components, which can make debugging slightly harder.
+- **Complexity** — MVC introduces more classes than a simple monolithic approach.
+- **Indirection** — the controller adds a layer of indirection between user input and model updates.
+- **Synchronization overhead** — `CopyOnWriteArrayList` has higher write cost for thread-safety.
 
 ## Category
 

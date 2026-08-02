@@ -1,0 +1,81 @@
+package com.javastarterkit.patterns.modelviewpresenter.repository;
+
+import com.javastarterkit.patterns.modelviewpresenter.model.Task;
+import com.javastarterkit.patterns.modelviewpresenter.model.TaskStatus;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * Thread-safe in-memory implementation of TaskRepository.
+ * Uses ConcurrentHashMap with copy-on-write for thread safety.
+ * Maintains a user-task index for efficient user-scoped queries.
+ */
+public final class InMemoryTaskRepository implements TaskRepository {
+
+    private final Map<String, Task> tasksById = new ConcurrentHashMap<>();
+    private final Map<String, List<String>> userTaskIndex = new ConcurrentHashMap<>();
+
+    @Override
+    public Optional<Task> findById(String taskId) {
+        Objects.requireNonNull(taskId, "Task ID must not be null");
+        return Optional.ofNullable(tasksById.get(taskId));
+    }
+
+    @Override
+    public List<Task> findByUserId(String userId) {
+        Objects.requireNonNull(userId, "User ID must not be null");
+        List<String> taskIds = userTaskIndex.getOrDefault(userId, Collections.emptyList());
+        List<Task> userTasks = new ArrayList<>(taskIds.size());
+        for (String taskId : taskIds) {
+            Task task = tasksById.get(taskId);
+            if (task != null) {
+                userTasks.add(task);
+            }
+        }
+        return List.copyOf(userTasks);
+    }
+
+    @Override
+    public List<Task> findByUserIdAndStatus(String userId, TaskStatus status) {
+        Objects.requireNonNull(userId, "User ID must not be null");
+        Objects.requireNonNull(status, "Status must not be null");
+        return findByUserId(userId).stream()
+                .filter(task -> task.status() == status)
+                .toList();
+    }
+
+    @Override
+    public Task save(Task task) {
+        Objects.requireNonNull(task, "Task must not be null");
+        String taskId = task.id();
+        String userId = task.userId();
+
+        tasksById.put(taskId, task);
+        userTaskIndex.computeIfAbsent(userId, k -> new ArrayList<>())
+                .add(taskId);
+        return task;
+    }
+
+    @Override
+    public void deleteById(String taskId) {
+        Objects.requireNonNull(taskId, "Task ID must not be null");
+        Task removed = tasksById.remove(taskId);
+        if (removed != null) {
+            List<String> userTasks = userTaskIndex.get(removed.userId());
+            if (userTasks != null) {
+                userTasks.remove(taskId);
+            }
+        }
+    }
+
+    @Override
+    public long countByUserId(String userId) {
+        Objects.requireNonNull(userId, "User ID must not be null");
+        return userTaskIndex.getOrDefault(userId, Collections.emptyList()).size();
+    }
+}

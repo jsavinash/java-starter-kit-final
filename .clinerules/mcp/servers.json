@@ -1,0 +1,106 @@
+{
+    "mcpServers": {
+        "memory": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-memory"
+            ],
+            "description": "Persistent memory across sessions for project context",
+            "env": {
+                "MEMORY_FILE_PATH": ".claude/memory.json"
+            }
+        },
+        "sequential-thinking": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-sequential-thinking"
+            ],
+            "description": "Complex multi-step reasoning chains for architectural decisions"
+        },
+        "filesystem": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-filesystem",
+                "."
+            ],
+            "description": "File system operations for batch file management",
+            "env": {
+                "ALLOWED_DIRECTORIES": "design-patterns,apps,build-logic,platforms,gradle"
+            }
+        },
+        "parallel-search": {
+            "type": "http",
+            "url": "https://search.parallel.ai/mcp",
+            "description": "Concurrent code search across multiple directories"
+        },
+        "context7": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@upstash/context7-mcp@latest"
+            ],
+            "description": "Context-aware assistance with project patterns and best practices",
+            "env": {
+                "DEFAULT_MINIMUM_TOKENS": "10000"
+            }
+        },
+        "playwright": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@playwright/mcp",
+                "--browser",
+                "chrome"
+            ],
+            "description": "Browser automation for testing web applications"
+        },
+        "squish": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "squish-memory"
+            ],
+            "description": "Local-first persistent memory runtime (SQLite-backed, Cline-compatible)"
+        },
+        "token-optimizer": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "token-optimizer-mcp"
+            ],
+            "description": "Token usage optimization for efficient context management"
+        },
+        "chrome-devtools": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "chrome-devtools-mcp@latest"
+            ],
+            "description": "Chrome debugging for web application development"
+        },
+        "ecc-bridge": {
+            "command": "node",
+            "args": [
+                "~/.claude/plugins/marketplaces/ecc/bin/mcp-bridge.js"
+            ],
+            "description": "ECC plugin bridge — exposes ECC skills, rules, and agents as MCP tools",
+            "env": {
+                "ECC_RULES_PATH": "~/.claude/plugins/marketplaces/ecc/rules/java/"
+            }
+        }
+    },
+    "projectSpecific": {
+        "javaToolchain": "Amazon Corretto 25",
+        "buildSystem": "Gradle 9.6.1",
+        "framework": "Spring Boot 4.0",
+        "moduleCount": "232+",
+        "compositeBuilds": [
+            "build-logic",
+            "platforms/spring-boot",
+            "design-patterns"
+        ]
+    }
+}

@@ -1,5 +1,9 @@
 # Front Controller Pattern
 
+**Category**: Architectural  
+**Difficulty**: Intermediate  
+**Java Version**: Java 25 (Amazon Corretto)
+
 ## Overview
 
 A centralized entry point (`FrontController`) handles all incoming requests, performs common processing (logging, authentication, authorization), and dispatches to the appropriate `Command`. This eliminates duplicate code across controllers and provides a single place to enforce cross-cutting concerns.
@@ -14,10 +18,22 @@ This example models a simple web application with three commands:
 ```
 front-controller/
 ├── build.gradle.kts
+├── LLD.md
 ├── README.md
 └── src/
     ├── main/java/com/javastarterkit/patterns/frontcontroller/
-    │   └── FrontController.java
+    │   ├── Command.java
+    │   ├── CommandRegistry.java
+    │   ├── FrontController.java
+    │   ├── AuthenticationService.java
+    │   ├── Request.java
+    │   ├── RequestLogger.java
+    │   ├── Response.java
+    │   └── commands/
+    │       ├── DashboardCommand.java
+    │       ├── HomeCommand.java
+    │       ├── LoginCommand.java
+    │       └── UnknownCommand.java
     └── test/java/com/javastarterkit/patterns/frontcontroller/
         └── FrontControllerTest.java
 ```
