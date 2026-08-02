@@ -1,6 +1,6 @@
 # System Design Patterns - Composite Build
 
-This is a **Gradle composite build** that includes comprehensive examples of **178+ system design patterns** and **41 system design theory topics** with working Java implementations.
+This is a **Gradle composite build** that includes comprehensive examples of **191 system design patterns** and **41 system design theory topics** with working Java implementations.
 
 ## Project Structure
 
@@ -16,9 +16,9 @@ design-patterns/
 │   ├── caching/
 │   ├── databases-dbms/
 │   └── ... (41 total modules)
-└── system-design-pattern/       # 178+ pattern implementations
+└── system-design-pattern/       # 191 pattern implementations
     ├── solid-principles/        #   5 patterns
-    ├── structural/              #  40 patterns
+    ├── structural/              #  41 patterns
     ├── creational/              #  14 patterns
     ├── concurrency/             #  20 patterns
     ├── behavioral/              #  38 patterns
@@ -154,7 +154,7 @@ Patterns that deal with object creation mechanisms.
 | Step Builder | Guides object construction through predefined steps |
 | Type Object | Allows creation of flexible type systems at runtime |
 
-### Structural Patterns (40)
+### Structural Patterns (41)
 Patterns that compose objects and classes into larger structures.
 
 | Pattern | Description |
@@ -236,7 +236,6 @@ Patterns that identify communication patterns between objects.
 | Observer | Notifies dependents of state changes |
 | Partial Response | Filters response data |
 | Pipeline | Processes data through a sequence of stages |
-| Pipes and Filters | Processes data through a chain of filters |
 | Property | Manages dynamic properties on objects |
 | Specification | Combines business rules using boolean logic |
 | State | Changes behavior when internal state changes |
@@ -419,8 +418,8 @@ Fundamental design principles for object-oriented programming.
 ## Statistics
 
 - **Total System Design Theory Topics**: 41
-- **Total Pattern Implementations**: 178+
-- **Total Java Examples**: 205+ working examples
+- **Total Pattern Implementations**: 191
+- **Total Java Examples**: 232+ working examples
 - **Java Version**: 25
 - **Build System**: Gradle with composite builds
 
